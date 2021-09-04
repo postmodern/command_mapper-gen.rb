@@ -66,7 +66,7 @@ module CommandMapper
           end
         end
 
-        ruby << " # FIXME: #{fixme}" if fixme
+        ruby << "\t# FIXME: #{fixme}" if fixme
         ruby
       end
 
