@@ -48,9 +48,11 @@ module CommandMapper
       #
       def to_ruby
         ruby = "option #{@flag.inspect}"
+        fixme = nil
 
         if @flag =~ /^-[a-zA-Z0-9]/ && @flag.length <= 3
           ruby << ", name: "
+          fixme = "name"
         end
 
         ruby << ", equals: #{@equals}"         unless @equals.nil?
@@ -64,6 +66,7 @@ module CommandMapper
           end
         end
 
+        ruby << " # FIXME: #{fixme}" if fixme
         ruby
       end
 
