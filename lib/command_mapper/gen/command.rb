@@ -8,7 +8,7 @@ module CommandMapper
     #
     class Command
 
-      # @return [String]
+      # @return [String, nil]
       attr_reader :command_name
 
       # @return [Hash{String => Option}]
@@ -22,7 +22,7 @@ module CommandMapper
       #
       # @param [String] command_name
       #
-      def initialize(command_name)
+      def initialize(command_name=nil)
         @command_name = command_name
 
         @options   = {}
