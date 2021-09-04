@@ -48,6 +48,11 @@ module CommandMapper
       #
       def to_ruby
         ruby = "option #{@flag.inspect}"
+
+        if @flag =~ /^-[a-zA-Z0-9]/ && @flag.length <= 3
+          ruby << ", name: "
+        end
+
         ruby << ", equals: #{@equals}"         unless @equals.nil?
         ruby << ", repeats: #{@repeats}"       unless @repeats.nil?
 
