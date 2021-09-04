@@ -38,14 +38,16 @@ module CommandMapper
       def to_ruby
         lines = []
 
-        lines << "#"
-        lines << "# Represents the `#{@command_name}` command"
-        lines << "#"
+        if @command_name
+          lines << "#"
+          lines << "# Represents the `#{@command_name}` command"
+          lines << "#"
 
-        lines << "class #{@command_name.capitalize} < CommandMapper::Command"
-        lines << ""
-        lines << "  command #{@command_name.inspect}"
-        lines << ""
+          lines << "class #{@command_name.capitalize} < CommandMapper::Command"
+          lines << ""
+          lines << "  command #{@command_name.inspect}"
+          lines << ""
+        end
 
         unless options.empty?
           options.each_value do |option|
@@ -63,8 +65,10 @@ module CommandMapper
           end
         end
 
-        lines << ''
-        lines << "end"
+        if @command_name
+          lines << ''
+          lines << "end"
+        end
 
         return lines.join($/)
       end
