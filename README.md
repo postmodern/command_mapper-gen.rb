@@ -57,7 +57,7 @@ class Grep < CommandMapper::Command
   option "--quiet"
   option "--binary-files", value: true
   option "--text"
-  option "-I"
+  option "-I", name: 	# FIXME: name
   option "--directories", equals: true, value: true
   option "--devices", equals: true, value: true
   option "--recursive"
@@ -80,18 +80,19 @@ class Grep < CommandMapper::Command
   option "--color"
   option "--colour"
   option "--binary"
-  option "-e", value: true
-  option "-f", value: true
-  option "-y"
-  option "-m", value: true
+  option "-e", name: , value: true	# FIXME: name
+  option "-f", name: , value: true	# FIXME: name
+  option "-y", name: 	# FIXME: name
+  option "-m", name: , value: true	# FIXME: name
   option "--unix-byte-offsets"
   option "-print0"
-  option "-A", value: true
-  option "-B", value: true
-  option "-C", value: true
-  option "-D", value: true
-  option "-d", value: true
+  option "-A", name: , value: true	# FIXME: name
+  option "-B", name: , value: true	# FIXME: name
+  option "-C", name: , value: true	# FIXME: name
+  option "-D", name: , value: true	# FIXME: name
+  option "-d", name: , value: true	# FIXME: name
 
+  argument :grep
   argument :patterns, repeats: true
   argument :file, repeats: true, required: false
   argument :pattern_file, repeats: true
