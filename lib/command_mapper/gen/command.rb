@@ -9,7 +9,7 @@ module CommandMapper
     class Command
 
       # @return [String, nil]
-      attr_reader :command_name
+      attr_accessor :command_name
 
       # @return [Hash{String => Option}]
       attr_reader :options

@@ -64,7 +64,7 @@ module CommandMapper
           scanner = StringScanner.new(usage)
 
           # skip the program name
-          scanner.skip(/\w+/)
+          @command.command_name ||= scanner.scan(/\w+/)
 
           until scanner.eos?
             # skip whitespace
