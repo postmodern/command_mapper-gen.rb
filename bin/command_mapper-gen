@@ -5,6 +5,51 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'command_mapper/gen/parsers'
 require 'command_mapper/gen/command'
+require 'command_mapper/gen/version'
+
+require 'optparse'
+
+PARSERS = {
+'help' => CommandMapper::Gen::Parsers::Help,
+'man'  => CommandMapper::Gen::Parsers::Man
+}
+
+parsers = [
+  CommandMapper::Gen::Parsers::Help,
+  CommandMapper::Gen::Parsers::Man
+]
+output = nil
+
+optparser = OptionParser.new do |opts|
+  opts.banner = "usage: #{File.basename($0)} [options] COMMAND_NAME"
+
+  opts.separator ""
+  opts.separator "Options:"
+
+  opts.on('-o','--output FILE','Saves the output to FILE') do |file|
+    output = file
+  end
+
+  opts.on('-p','--parser=PARSER', PARSERS, 'Selects which parser to use') do |parser|
+    parsers = [parser]
+  end
+
+  opts.on('-V','--version','Print the version') do
+    puts "command_mapper-gen #{CommandMapper::Gen::VERSION}"
+    exit
+  end
+
+  opts.on('-h','--help','Print the help output') do
+    puts opts
+    exit
+  end
+
+  opts.separator ""
+  opts.separator "Examples:"
+  opts.separator "    command_mapper-gen grep"
+  opts.separator ""
+end
+optparser.parse!
 
 USAGE = "usage: command_mapper-gen COMMAND_NAME [OUTPUT]"
 BUG_REPORT_URL = "https://github.com/postmodern/command_mapper-gen/issues"
@@ -14,18 +59,7 @@ unless ARGV[0]
   exit -1
 end
 
-if ARGV[0] == '--help' || ARGV[0] == '-h'
-  puts USAGE
-  exit
-end
-
 command = CommandMapper::Gen::Command.new(ARGV[0])
-output  = ARGV[1]
-
-parsers = [
-  CommandMapper::Gen::Parsers::Help,
-  CommandMapper::Gen::Parsers::Man
-]
 
 parsers.each do |parser|
   begin
