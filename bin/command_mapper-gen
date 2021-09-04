@@ -21,7 +21,7 @@ parsers = [
 output = nil
 
 optparser = OptionParser.new do |opts|
-  opts.banner = "usage: #{File.basename($0)} [options] COMMAND_NAME"
+  opts.banner = "usage: #{File.basename($0)} [options] [COMMAND_NAME]"
 
   opts.separator ""
   opts.separator "Options:"
@@ -30,7 +30,7 @@ optparser = OptionParser.new do |opts|
     output = file
   end
 
-  opts.on('-p','--parser=PARSER', PARSERS, 'Selects which parser to use') do |parser|
+  opts.on('-p','--parser=PARSER', PARSERS, 'Selects which parser to use (help or man)') do |parser|
     parsers = [parser]
   end
 
@@ -51,26 +51,36 @@ optparser = OptionParser.new do |opts|
 end
 optparser.parse!
 
-USAGE = "usage: command_mapper-gen COMMAND_NAME [OUTPUT]"
 BUG_REPORT_URL = "https://github.com/postmodern/command_mapper-gen/issues"
 
-unless ARGV[0]
-  $stderr.puts USAGE
-  exit -1
+def print_backtrace(exception)
+  $stderr.puts "Oops! Looks like you've found a bug!"
+  $stderr.puts "Please report the following to: #{BUG_REPORT_URL}"
+  $stderr.puts
+  $stderr.puts "```"
+  $stderr.puts "#{exception.full_message}"
+  $stderr.puts "```"
 end
 
-command = CommandMapper::Gen::Command.new(ARGV[0])
+if ARGV[0]
+  command = CommandMapper::Gen::Command.new(ARGV[0])
 
-parsers.each do |parser|
+  parsers.each do |parser|
+    begin
+      parser.run(command)
+    rescue => error
+      print_backtrace(error)
+      exit -1
+    end
+  end
+else
+  command = CommandMapper::Gen::Command.new
+  parser  = CommandMapper::Gen::Parsers::Help.new(command)
+
   begin
-    parser.run(command)
+    parser.parse(STDIN.read)
   rescue => error
-    $stderr.puts "Oops! Looks like you've found a bug!"
-    $stderr.puts "Please report the following to: #{BUG_REPORT_URL}"
-    $stderr.puts
-    $stderr.puts "```"
-    $stderr.puts "#{error.full_message}"
-    $stderr.puts "```"
+    print_backtrace(error)
     exit -1
   end
 end
