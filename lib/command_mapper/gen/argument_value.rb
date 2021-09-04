@@ -11,9 +11,6 @@ module CommandMapper
       # @return [Boolean, nil]
       attr_reader :required
 
-      # @return [Boolean, nil]
-      attr_reader :blank
-
       #
       # Initializes the argument value.
       #
@@ -21,12 +18,9 @@ module CommandMapper
       #
       # @param [Boolean, nil] required
       #
-      # @param [Boolean, nil] blank
-      #
-      def initialize(type: nil, required: nil, blank: nil)
+      def initialize(type: nil, required: nil)
         @type     = type
         @required = required
-        @blank    = blank
       end
 
       #
@@ -38,7 +32,6 @@ module CommandMapper
         ruby = ""
         ruby << "type: #{@type.to_ruby}"         unless @type.nil?
         ruby << "required: #{@required.inspect}" unless @required.nil?
-        ruby << "blank: #{@blank.inspect}"       unless @blank.nil?
         ruby
       end
 
