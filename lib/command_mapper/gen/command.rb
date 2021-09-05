@@ -8,6 +8,13 @@ module CommandMapper
     #
     class Command
 
+      # The command name or path to the command.
+      #
+      # @return [String, nil]
+      attr_reader :command
+
+      # The command's name.
+      #
       # @return [String, nil]
       attr_accessor :command_name
 
@@ -20,10 +27,15 @@ module CommandMapper
       #
       # Initializes the parsed command.
       #
-      # @param [String] command_name
+      # @param [String] command
+      #   The command name or path to the command.
       #
-      def initialize(command_name=nil)
-        @command_name = command_name
+      def initialize(command=nil)
+        @command = command
+
+        @command_name = if command
+                          File.basename(command)
+                        end
 
         @options   = {}
         @arguments = {}

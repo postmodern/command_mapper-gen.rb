@@ -47,7 +47,7 @@ module CommandMapper
         #
         def self.run(command)
           output = begin
-                     `#{command.command_name} --help`
+                     `#{command.command} --help`
                    rescue Errno::ENOENT
                    end
 
