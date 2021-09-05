@@ -88,6 +88,8 @@ module CommandMapper
         lines = []
 
         if @command_name
+          lines << "require 'command_mapper/command'"
+          lines << ""
           lines << "#"
           lines << "# Represents the `#{@command_name}` command"
           lines << "#"

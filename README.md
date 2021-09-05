@@ -24,6 +24,8 @@ $ command_mapper-gen grep
 Outputs:
 
 ```ruby
+require 'command_mapper/command'
+
 #
 # Represents the `grep` command
 #

@@ -1,3 +1,5 @@
+require 'command_mapper/command'
+
 #
 # Represents the `grep` command
 #
