@@ -91,7 +91,7 @@ module CommandMapper
               scanner.skip(/\s+/)
             elsif scanner.skip(/,#{DOT_DOT_DOT}/)
               keywords[:repeats] = true
-              keywords[:type]    = List.new(',')
+              keywords[:type]    = Types::List.new(',')
             end
 
             if keywords[:required] == false
@@ -134,11 +134,11 @@ module CommandMapper
           name = scanner.scan(ARGUMENT_NAME)
 
           if scanner.skip(/,#{DOT_DOT_DOT}/)
-            value[:type] = List.new(',')
+            value[:type] = Types::List.new(',')
           elsif scanner.skip(/=#{ARGUMENT_NAME}/)
-            value[:type] = KeyValue.new('=')
+            value[:type] = Types::KeyValue.new('=')
           elsif scanner.skip(/:#{ARGUMENT_NAME}/)
-            value[:type] = KeyValue.new(':')
+            value[:type] = Types::KeyValue.new(':')
           elsif scanner.skip(/\|/) # detected a multiple choice value
             next_name = scanner.scan(ARGUMENT_NAME)
 
@@ -146,12 +146,12 @@ module CommandMapper
             when 'yes', 'y'
               if next_name == 'no' || next_name == 'n'
                 # yes|no detected
-                value[:type] = Map.new(true => name, false => next_name)
+                value[:type] = Types::Map.new(true => name, false => next_name)
               end
             when 'enabled'
                if next_name == 'disabled'
                 # enabled|disabled detected
-               value[:type] = Map.new(true => name, false => next_name)
+               value[:type] = Types::Map.new(true => name, false => next_name)
               end
             else
               # foo|bar|... detected
@@ -166,7 +166,7 @@ module CommandMapper
                 end
               end
 
-              value[:type] = Map.new(map)
+              value[:type] = Types::Map.new(map)
             end
           end
 
