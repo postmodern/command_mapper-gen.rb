@@ -4,7 +4,6 @@ require 'command_mapper/gen/version'
 
 require 'optparse'
 
-
 module CommandMapper
   module Gen
     class CLI
