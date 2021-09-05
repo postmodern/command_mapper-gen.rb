@@ -46,9 +46,12 @@ module CommandMapper
         #   Returns `nil` if the command could not be found.
         #
         def self.run(command)
-          output = `#{command.command_name} --help`
+          output = begin
+                     `#{command.command_name} --help`
+                   rescue Errno::ENOENT
+                   end
 
-          parse(command,output) unless output.empty?
+          parse(command,output) unless (output.nil? || output.empty?)
         end
 
         STRING_LITERAL = /[a-z0-9_-]+/
