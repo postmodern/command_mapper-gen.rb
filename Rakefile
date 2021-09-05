@@ -10,3 +10,6 @@ task :default => :spec
 
 require 'yard'
 YARD::Rake::YardocTask.new
+
+require 'command_mapper/gen/task'
+CommandMapper::Gen::Task.new('grep', 'examples/grep.rb')
