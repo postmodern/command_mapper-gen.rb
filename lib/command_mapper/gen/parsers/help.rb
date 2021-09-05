@@ -158,8 +158,11 @@ module CommandMapper
                value[:type] = Types::Map.new(true => name, false => next_name)
               end
             else
-              # foo|bar|... detected
-              map = {name.to_sym => name, next_name.to_sym => next_name}
+              # FOO|BAR detected
+              map = {}
+
+              map[name.to_sym]      = name      if name =~ /[a-z0-9_-]+/
+              map[next_name.to_sym] = next_name if name =~ /[a-z0-9_-]+/
 
               # consume the rest of the |... choises
               while scanner.skip(/\|/)
