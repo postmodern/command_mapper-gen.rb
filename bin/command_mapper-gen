@@ -9,6 +9,8 @@ require 'command_mapper/gen/version'
 
 require 'optparse'
 
+PROGRAM_NAME = File.basename($0)
+
 PARSERS = {
 'help' => CommandMapper::Gen::Parsers::Help,
 'man'  => CommandMapper::Gen::Parsers::Man
@@ -21,7 +23,7 @@ parsers = [
 output = nil
 
 optparser = OptionParser.new do |opts|
-  opts.banner = "usage: #{File.basename($0)} [options] [COMMAND_NAME]"
+  opts.banner = "usage: #{PROGRAM_NAME} [options] [COMMAND_NAME]"
 
   opts.separator ""
   opts.separator "Options:"
@@ -83,6 +85,11 @@ else
     print_backtrace(error)
     exit -1
   end
+end
+
+if (command.options.empty? && command.arguments.empty?)
+  $stderr.puts "#{PROGRAM_NAME}: no options or arguments detected"
+  exit -2
 end
 
 if output then command.save(output)
