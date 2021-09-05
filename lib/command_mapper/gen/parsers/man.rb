@@ -6,9 +6,12 @@ module CommandMapper
       class Man < Help
 
         def self.run(command)
-          output = `man #{command.command_name} 2>/dev/null`
+          output = begin
+                     `man #{command.command_name} 2>/dev/null`
+                   rescue Errno::ENOENT
+                   end
 
-          parse(command,output) unless output.empty?
+          parse(command,output) unless (output.nil? || output.empty?)
         end
 
         SECTION_REGEXP = /^[A-Z ]+$/
