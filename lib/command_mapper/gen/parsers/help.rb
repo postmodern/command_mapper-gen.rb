@@ -139,6 +139,35 @@ module CommandMapper
             value[:type] = KeyValue.new('=')
           elsif scanner.skip(/:#{ARGUMENT_NAME}/)
             value[:type] = KeyValue.new(':')
+          elsif scanner.skip(/\|/) # detected a multiple choice value
+            next_name = scanner.scan(ARGUMENT_NAME)
+
+            case name
+            when 'yes', 'y'
+              if next_name == 'no' || next_name == 'n'
+                # yes|no detected
+                value[:type] = Map.new(true => name, false => next_name)
+              end
+            when 'enabled'
+               if next_name == 'disabled'
+                # enabled|disabled detected
+               value[:type] = Map.new(true => name, false => next_name)
+              end
+            else
+              # foo|bar|... detected
+              map = {name.to_sym => name, next_name.to_sym => next_name}
+
+              # consume the rest of the |... choises
+              while scanner.skip(/\|/)
+                next_name = scanner.scan(ARGUMENT_NAME)
+
+                if name =~ /[a-z0-9_-]+/
+                  map[next_name.to_sym] = next_name
+                end
+              end
+
+              value[:type] = Map.new(map)
+            end
           end
 
           if value[:required] == false
