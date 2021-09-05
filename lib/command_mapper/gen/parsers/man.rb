@@ -6,7 +6,7 @@ module CommandMapper
       class Man < Help
 
         def self.run(command)
-          output = `man #{command.command_name}`
+          output = `man #{command.command_name} 2>/dev/null`
 
           parse(command,output) unless output.empty?
         end
