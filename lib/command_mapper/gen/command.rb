@@ -80,7 +80,9 @@ module CommandMapper
           lines << "# Represents the `#{@command_name}` command"
           lines << "#"
 
-          lines << "class #{@command_name.capitalize} < CommandMapper::Command"
+          class_name = @command_name.split(/[_-]+/).map(&:capitalize).join
+
+          lines << "class #{class_name} < CommandMapper::Command"
           lines << ""
           lines << "  command #{@command_name.inspect}"
           lines << ""
