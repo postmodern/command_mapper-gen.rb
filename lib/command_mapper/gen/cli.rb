@@ -137,10 +137,22 @@ module CommandMapper
         end
       end
 
+      #
+      # Prints an error message to stderr.
+      #
+      # @param [String] error
+      #   The error message.
+      #
       def print_error(error)
         $stderr.puts "#{PROGRAM_NAME}: #{error}"
       end
 
+      #
+      # Prints a backtrace to stderr.
+      #
+      # @param [Exception] exception
+      #   The exception.
+      #
       def print_backtrace(exception)
         $stderr.puts "Oops! Looks like you've found a bug!"
         $stderr.puts "Please report the following to: #{BUG_REPORT_URL}"
