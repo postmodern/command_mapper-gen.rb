@@ -42,6 +42,28 @@ module CommandMapper
       end
 
       #
+      # Defines an option for the command.
+      #
+      # @param [String] flag
+      #
+      # @param [Hash{Symbol => Object}] kwargs
+      #
+      def option(flag,**kwargs)
+        @options[flag] = Option.new(flag,**kwargs)
+      end
+
+      #
+      # Defines an argument for the command.
+      #
+      # @param [Symbol] name
+      #
+      # @param [Hash{Symbol => Object}] kwargs
+      #
+      def argument(name,**kwargs)
+        @arguments[name] = Argument.new(name,**kwargs)
+      end
+
+      #
       # Converts the parsed command to Ruby source code.
       #
       # @return [String]

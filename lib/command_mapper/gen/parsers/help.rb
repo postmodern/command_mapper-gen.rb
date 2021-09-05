@@ -113,7 +113,7 @@ module CommandMapper
 
               # ignore [OPTIONS] or [opts]
               unless (name == :option || name == :options || name == :opts)
-                @command.arguments[name] = Argument.new(name,**keywords)
+                @command.argument(name,**keywords)
               end
             else
               warn "could not scan argument name at: #{scanner.rest}"
@@ -242,7 +242,7 @@ module CommandMapper
           end
 
           if (flag = long_flag || short_flag)
-            @command.options[flag] = Option.new(flag,**keywords)
+            @command.option(flag,**keywords)
           else
             warn "could not detect option flag: #{line}"
           end
