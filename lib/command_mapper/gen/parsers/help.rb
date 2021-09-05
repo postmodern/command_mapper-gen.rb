@@ -134,12 +134,16 @@ module CommandMapper
           name = scanner.scan(ARGUMENT_NAME)
 
           if scanner.skip(/,#{DOT_DOT_DOT}/)
+            # ,... detected
             value[:type] = Types::List.new(',')
           elsif scanner.skip(/=#{ARGUMENT_NAME}/)
+            # NAME=VALUE detected
             value[:type] = Types::KeyValue.new('=')
           elsif scanner.skip(/:#{ARGUMENT_NAME}/)
+            # NAME:VALUE detected
             value[:type] = Types::KeyValue.new(':')
-          elsif scanner.skip(/\|/) # detected a multiple choice value
+          elsif scanner.skip(/\|/)
+            # foo|bar detected
             next_name = scanner.scan(ARGUMENT_NAME)
 
             case name
