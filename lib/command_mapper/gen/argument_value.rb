@@ -1,7 +1,7 @@
 module CommandMapper
   module Gen
     #
-    # Represents the configuration keywords for the `ArgumentValue` base class.
+    # Represents a mock `CommandMapper::ArgumentValue` base class.
     #
     class ArgumentValue
 

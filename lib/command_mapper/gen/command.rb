@@ -4,6 +4,9 @@ require 'command_mapper/gen/argument'
 module CommandMapper
   module Gen
     #
+    # Represents a mock `CommandMapper::Command` class that will be populated
+    # by the {Parsers} and written out to a file.
+    #
     # @api private
     #
     class Command

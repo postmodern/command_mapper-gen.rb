@@ -3,7 +3,7 @@ require 'command_mapper/gen/option_value'
 module CommandMapper
   module Gen
     #
-    # Represents a parsed option.
+    # Represents a mock `CommandMapper::Option` class.
     #
     class Option
 

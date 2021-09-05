@@ -3,7 +3,7 @@ require 'command_mapper/gen/argument_value'
 module CommandMapper
   module Gen
     #
-    # Represents a parsed argument.
+    # Represents a mock `CommandMapper::Argument` class.
     #
     class Argument < ArgumentValue
 
