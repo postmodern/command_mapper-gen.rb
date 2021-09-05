@@ -12,8 +12,8 @@ module CommandMapper
       PROGRAM_NAME = File.basename($0)
 
       PARSERS = {
-        'help' => CommandMapper::Gen::Parsers::Help,
-        'man'  => CommandMapper::Gen::Parsers::Man
+        'help' => Parsers::Help,
+        'man'  => Parsers::Man
       }
 
       BUG_REPORT_URL = "https://github.com/postmodern/command_mapper-gen/issues/new"
@@ -25,8 +25,13 @@ module CommandMapper
 
       # The parsers to run.
       #
-      # @return [Array<CommandMapper::Gen::Parsers::Help, CommandMapper::Gen::Parsers::Man>]
+      # @return [Array<Parsers::Help, Parsers::Man>]
       attr_reader :parsers
+
+      # The parsed command.
+      #
+      # @return [Command]
+      attr_reader :command
 
       # The command's option parser.
       #
@@ -39,6 +44,7 @@ module CommandMapper
       def initialize
         @output  = nil
         @parsers = PARSERS.values
+        @command = nil
 
         @option_parser = option_parser
       end
@@ -62,8 +68,8 @@ module CommandMapper
       def run(argv=ARGV)
         argv = @option_parser.parse(argv)
 
-        if argv.first
-          command = CommandMapper::Gen::Command.new(argv.first)
+        if (command_name = argv.first)
+          @command = Command.new(command_name)
 
           @parsers.each do |parser|
             begin
@@ -74,8 +80,8 @@ module CommandMapper
             end
           end
         else
-          command = CommandMapper::Gen::Command.new
-          parser  = CommandMapper::Gen::Parsers::Help.new(command)
+          @command = Command.new
+          parser   = Parsers::Help.new(command)
 
           begin
             parser.parse($stdin.read)
@@ -85,12 +91,12 @@ module CommandMapper
           end
         end
 
-        if (command.options.empty? && command.arguments.empty?)
+        if (@command.options.empty? && @command.arguments.empty?)
           print_error "no options or arguments detected"
           exit -2
         end
 
-        if @output then command.save(@output)
+        if @output then @command.save(@output)
         else            puts command.to_ruby
         end
       end
@@ -116,7 +122,7 @@ module CommandMapper
           end
 
           opts.on('-V','--version','Print the version') do
-            puts "command_mapper-gen #{CommandMapper::Gen::VERSION}"
+            puts "command_mapper-gen #{VERSION}"
             exit
           end
 
