@@ -67,6 +67,18 @@ module CommandMapper
       end
 
       #
+      # The CamelCase class name derived from the {#command_name}.
+      #
+      # @return [String, nil]
+      #   The class name or `nil` if {#command_name} is also `nil`.
+      #
+      def class_name
+        if @command_name
+          @command_name.split(/[_-]+/).map(&:capitalize).join
+        end
+      end
+
+      #
       # Converts the parsed command to Ruby source code.
       #
       # @return [String]
@@ -79,8 +91,6 @@ module CommandMapper
           lines << "#"
           lines << "# Represents the `#{@command_name}` command"
           lines << "#"
-
-          class_name = @command_name.split(/[_-]+/).map(&:capitalize).join
 
           lines << "class #{class_name} < CommandMapper::Command"
           lines << ""
