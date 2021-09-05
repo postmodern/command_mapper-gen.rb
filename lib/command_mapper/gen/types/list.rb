@@ -3,10 +3,21 @@ module CommandMapper
     module Types
       class List
 
+        #
+        # Initializes the list type.
+        #
+        # @param [String] separator
+        #   The separator character.
+        #
         def initialize(separator)
           @separator = separator
         end
 
+        #
+        # Converts the list type to Ruby source code.
+        #
+        # @return [String]
+        #
         def to_ruby
           "List.new(#{separator.inspect})"
         end
