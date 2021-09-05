@@ -9,7 +9,7 @@ module CommandMapper
   module Gen
     class CLI
 
-      PROGRAM_NAME = File.basename($0)
+      PROGRAM_NAME = "command_mapper-gen"
 
       PARSERS = {
         'help' => Parsers::Help,
