@@ -18,6 +18,21 @@ module CommandMapper
 
       BUG_REPORT_URL = "https://github.com/postmodern/command_mapper-gen/issues/new"
 
+      # The output file or `nil` for stdout.
+      #
+      # @return [File, nil]
+      attr_reader :output
+
+      # The parsers to run.
+      #
+      # @return [Array<CommandMapper::Gen::Parsers::Help, CommandMapper::Gen::Parsers::Man>]
+      attr_reader :parsers
+
+      # The command's option parser.
+      #
+      # @return [OptionParser]
+      attr_reader :option_parser
+
       #
       # Initializes the command.
       #
@@ -50,7 +65,7 @@ module CommandMapper
         if argv.first
           command = CommandMapper::Gen::Command.new(argv.first)
 
-          parsers.each do |parser|
+          @parsers.each do |parser|
             begin
               parser.run(command)
             rescue => error
@@ -75,8 +90,8 @@ module CommandMapper
           exit -2
         end
 
-        if output then command.save(output)
-        else           puts command.to_ruby
+        if @output then command.save(@output)
+        else            puts command.to_ruby
         end
       end
 
