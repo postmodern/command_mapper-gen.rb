@@ -51,6 +51,8 @@ module CommandMapper
           parse(command,output) unless output.empty?
         end
 
+        STRING_LITERAL = /[a-z0-9_-]+/
+
         ARGUMENT_NAME = /[a-z_]+|[A-Z_]+|\<[a-z]+[ a-z_-]*\>/
 
         DOT_DOT_DOT = /\.\.\./
@@ -161,14 +163,14 @@ module CommandMapper
               # FOO|BAR detected
               map = {}
 
-              map[name.to_sym]      = name      if name =~ /[a-z0-9_-]+/
-              map[next_name.to_sym] = next_name if name =~ /[a-z0-9_-]+/
+              map[name.to_sym]      = name      if name =~ STRING_LITERAL
+              map[next_name.to_sym] = next_name if name =~ STRING_LITERAL
 
               # consume the rest of the |... choises
               while scanner.skip(/\|/)
                 next_name = scanner.scan(ARGUMENT_NAME)
 
-                if name =~ /[a-z0-9_-]+/
+                if name =~ STRING_LITERAL
                   map[next_name.to_sym] = next_name
                 end
               end
