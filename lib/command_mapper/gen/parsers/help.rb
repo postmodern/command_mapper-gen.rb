@@ -1,4 +1,4 @@
-require 'command_mapper/gen/parsers/option'
+require 'command_mapper/gen/parsers/options'
 require 'command_mapper/gen/command'
 
 require 'strscan'
@@ -131,7 +131,7 @@ module CommandMapper
         #   The option line to parse.
         #
         def parse_option_line(line)
-          parser = Parsers::Option.new
+          parser = Parsers::Options.new
           tree   = begin
                      parser.parse(line)
                    rescue Parslet::ParseFailed => error

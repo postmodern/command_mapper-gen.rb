@@ -3,7 +3,7 @@ require 'parslet'
 module CommandMapper
   module Gen
     module Parsers
-      class Option < Parslet::Parser
+      class Options < Parslet::Parser
 
         rule(:space)  { match[' '] }
         rule(:spaces) { space.repeat(1) }

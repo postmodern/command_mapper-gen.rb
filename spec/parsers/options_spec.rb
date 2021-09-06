@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'command_mapper/gen/parsers/option'
+require 'command_mapper/gen/parsers/options'
 
-describe CommandMapper::Gen::Parsers::Option do
+describe CommandMapper::Gen::Parsers::Options do
   describe "#name" do
     subject { super().name.parse(name) }
 
