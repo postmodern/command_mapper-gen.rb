@@ -64,9 +64,9 @@ module CommandMapper
         DOT_DOT_DOT = /\.\.\./
 
         #
-        # @param [String] usage
+        # Parses a `usage: ...` string into {#command}.
         #
-        # @param [Command] command
+        # @param [String] usage
         #
         def parse_usage(usage)
           scanner = StringScanner.new(usage)
@@ -124,9 +124,11 @@ module CommandMapper
         end
 
         #
-        # @param [String] usage
+        # Parses an option line (ex: `    -o, --opt VALUE      Blah blah lbah`)
+        # into {#command}.
         #
-        # @param [Command] command
+        # @param [String] line
+        #   The option line to parse.
         #
         def parse_option_line(line)
           parser = Parsers::Option.new
@@ -203,9 +205,10 @@ module CommandMapper
         OPTION_LINE = /^\s+-/
 
         #
-        # @param [String] output
+        # Parses `--help` output into {#command}.
         #
-        # @param [Command] command
+        # @param [String] output
+        #   The full `--help` output.
         #
         def parse(output)
           output.each_line do |line|
