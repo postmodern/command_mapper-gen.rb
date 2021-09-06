@@ -53,11 +53,10 @@ class Grep < CommandMapper::Command
   option "-NUM"
   option "--group-separator", equals: true, value: true
   option "--no-group-separator"
-  option "--color"
-  option "--colour"
+  option "--color", equals: :optional, value: {required: false}
+  option "--colour", equals: :optional, value: {required: false}
   option "--binary"
 
-  argument :grep
   argument :patterns
   argument :file, repeats: true, required: false
 

@@ -1,3 +1,4 @@
+require 'command_mapper/gen/parsers/option'
 require 'command_mapper/gen/command'
 
 require 'strscan'
@@ -54,6 +55,8 @@ module CommandMapper
           parse(command,output) unless (output.nil? || output.empty?)
         end
 
+        COMMAND_NAME = /[a-zA-Z][a-zA-Z0-9_-]*/
+
         STRING_LITERAL = /[a-z0-9_-]+/
 
         ARGUMENT_NAME = /[a-z_]+|[A-Z_]+|\<[a-z]+[ a-z_-]*\>/
@@ -68,8 +71,11 @@ module CommandMapper
         def parse_usage(usage)
           scanner = StringScanner.new(usage)
 
-          # skip the program name
-          @command.command_name ||= scanner.scan(/\w+/)
+          # scan the program name
+          command_name = scanner.scan(COMMAND_NAME)
+
+          # optionally set the program name, if it already hasn't been given
+          @command.command_name ||= command_name
 
           until scanner.eos?
             # skip whitespace
@@ -82,29 +88,25 @@ module CommandMapper
             keywords = {}
 
             # detect optional openning [ or {
-            if scanner.skip(/[\[\{]/)
+            if scanner.skip(/[\[\{]\s*/)
               keywords[:required] = false
             end
 
-            # skip optional space after [ or {
-            scanner.skip(/\s+/)
-
             argument = scanner.scan(ARGUMENT_NAME)
 
-            if scanner.skip(/\s*#{DOT_DOT_DOT}/)
+            if scanner.skip(/\s*#{DOT_DOT_DOT}\s*/)
               keywords[:repeats] = true
-              scanner.skip(/\s+/)
-            elsif scanner.skip(/,#{DOT_DOT_DOT}/)
+            elsif scanner.skip(/,#{DOT_DOT_DOT}\s*/)
               keywords[:repeats] = true
               keywords[:type]    = Types::List.new(',')
             end
 
             if keywords[:required] == false
               # skip the closing ] or }
-              scanner.skip(/[\]\}]/)
+              scanner.skip(/[\]\}]\s*/)
             end
 
-            if scanner.skip(/\s*#{DOT_DOT_DOT}/)
+            if scanner.skip(/\s*#{DOT_DOT_DOT}\s*/)
               keywords[:repeats] = true
             end
 
@@ -121,128 +123,76 @@ module CommandMapper
           end
         end
 
-        def parse_option_value(arg)
-          scanner  = StringScanner.new(arg)
-          value    = {}
-          keywords = {value: value}
-
-          # skip any opening [
-          if scanner.skip(/\[/)
-            value[:required] = false
-          end
-
-          # skip the = character
-          if scanner.skip(/=/)
-            keywords[:equals] = true
-          end
-
-          name = scanner.scan(ARGUMENT_NAME)
-
-          if scanner.skip(/,#{DOT_DOT_DOT}/)
-            # ,... detected
-            value[:type] = Types::List.new(',')
-          elsif scanner.skip(/=#{ARGUMENT_NAME}/)
-            # NAME=VALUE detected
-            value[:type] = Types::KeyValue.new('=')
-          elsif scanner.skip(/:#{ARGUMENT_NAME}/)
-            # NAME:VALUE detected
-            value[:type] = Types::KeyValue.new(':')
-          elsif scanner.skip(/\|/)
-            # foo|bar detected
-            next_name = scanner.scan(ARGUMENT_NAME)
-
-            case name
-            when 'yes', 'y'
-              if next_name == 'no' || next_name == 'n'
-                # yes|no detected
-                value[:type] = Types::Map.new(true => name, false => next_name)
-              end
-            when 'enabled'
-               if next_name == 'disabled'
-                # enabled|disabled detected
-               value[:type] = Types::Map.new(true => name, false => next_name)
-              end
-            else
-              # FOO|BAR detected
-              map = {}
-
-              map[name.to_sym]      = name      if name =~ STRING_LITERAL
-              map[next_name.to_sym] = next_name if name =~ STRING_LITERAL
-
-              # consume the rest of the |... choises
-              while scanner.skip(/\|/)
-                next_name = scanner.scan(ARGUMENT_NAME)
-
-                if name =~ STRING_LITERAL
-                  map[next_name.to_sym] = next_name
-                end
-              end
-
-              value[:type] = Types::Map.new(map)
-            end
-          end
-
-          if value[:required] == false
-            # skip the closing ]
-            scanner.skip(/\]/)
-          end
-
-          return keywords
-        end
-
         #
         # @param [String] usage
         #
         # @param [Command] command
         #
-        def parse_option(line)
-          scanner = StringScanner.new(line)
+        def parse_option_line(line)
+          parser = Parsers::Option.new
+          tree   = begin
+                     parser.parse(line)
+                   rescue Parslet::ParseFailed => error
+                     warn "could not parse line: #{line}"
+                     warn error.parse_failure_cause.ascii_tree
+                     return
+                   end
 
-          flag     = nil
+          flag = tree[:long_flag] || tree[:short_flag]
           keywords = {}
 
-          # skip whitespace
-          scanner.skip(/\s+/)
-
-          # attempt to scan the short option
-          if (short_flag = scanner.scan(/-[a-zA-Z0-9][a-zA-Z0-9_-]*/))
-            # is there a space after the short option?
-            if scanner.skip(/\s/)
-              # is there an argument name?
-              if (arg = scanner.scan(/\S+/))
-                # parse the argument name following the short option
-                keywords.merge!(parse_option_value(arg))
-              end
-            end
-
-            # skip there a ','?
-            scanner.skip(/,\s+/)
+          if tree[:equals]
+            keywords[:equals] = true
           end
 
-          # scan the long option
-          if (long_flag = scanner.scan(/--[a-zA-Z][a-zA-Z0-9_-]+/))
-            # attempt to skip the '='
-            if scanner.skip(/=/)
-              keywords[:equals] = true
+          if tree[:optional]
+            if tree[:optional][:equals]
+              keywords[:equals] = :optional
+            end
 
-              # scan the option's ARG
-              if (arg = scanner.scan(/\S+/))
-                # scan the option's ARG
-                keywords.merge!(parse_option_value(arg))
+            value = tree[:optional][:value]
+
+            keywords[:value] = {required: false}
+          elsif tree[:value]
+            value = tree[:value]
+
+            keywords[:value] = {}
+          end
+
+          if value
+            if value[:list]
+              separator = value[:list][:separator]
+
+              keywords[:value][:type] = Types::List.new(separator.to_s)
+            elsif value[:key_value]
+              separator = value[:key_value][:separator]
+
+              keywords[:value][:type] = Types::KeyValue.new(separator.to_s)
+            elsif value[:literal_values]
+              map = {}
+
+              value[:literal_values].each do |node|
+                map[node[:string].to_sym] = node[:string].to_s
               end
-            else
-              # no '=' character? skip the whitespace character
-              if scanner.skip(/\s/)
-                if (arg = scanner.scan(/\S+/))
-                  # scan the option's ARG
-                  keywords.merge!(parse_option_value(arg))
-                end
+
+              # perform some value coercion
+              case map
+              when {yes: 'yes', no: 'no'}
+                map = {true => 'yes', false => 'no'}
+              when {y: 'y', n: 'n'}
+                map = {true => 'y', false => 'n'}
+              when {enabled: 'enabled', disabled: 'disabled'}
+                map = {true => 'enabled', false => 'disabled'}
               end
+
+              keywords[:value][:type] = Types::Map.new(map)
+            elsif value[:name]
+              # NOTE: maybe use this in the future
             end
           end
 
-          if (flag = long_flag || short_flag)
-            @command.option(flag,**keywords)
+          if flag
+            @command.option(flag.to_s, **keywords)
           else
             warn "could not detect option flag: #{line}"
           end
@@ -262,7 +212,7 @@ module CommandMapper
             if line =~ USAGE
               parse_usage(line.sub(USAGE,'').chomp)
             elsif line =~ OPTION_LINE
-              parse_option(line.chomp)
+              parse_option_line(line.chomp)
             end
           end
         end
