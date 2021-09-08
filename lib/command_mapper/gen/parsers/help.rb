@@ -1,7 +1,6 @@
 require 'command_mapper/gen/parsers/options'
+require 'command_mapper/gen/parsers/usage'
 require 'command_mapper/gen/command'
-
-require 'strscan'
 
 module CommandMapper
   module Gen
@@ -55,70 +54,48 @@ module CommandMapper
           parse(command,output) unless (output.nil? || output.empty?)
         end
 
-        COMMAND_NAME = /[a-zA-Z][a-zA-Z0-9_-]*/
-
-        STRING_LITERAL = /[a-z0-9_-]+/
-
-        ARGUMENT_NAME = /[a-z_]+|[A-Z_]+|\<[a-z]+[ a-z_-]*\>/
-
-        DOT_DOT_DOT = /\.\.\./
-
         #
         # Parses a `usage: ...` string into {#command}.
         #
         # @param [String] usage
         #
         def parse_usage(usage)
-          scanner = StringScanner.new(usage)
+          parser = Usage.new
 
-          # scan the program name
-          command_name = scanner.scan(COMMAND_NAME)
+          nodes = begin
+                    parser.parse(usage)
+                   rescue Parslet::ParseFailed => error
+                     warn "could not parse usage: #{usage}"
+                     warn error.parse_failure_cause.ascii_tree
+                     return
+                   end
 
-          # optionally set the program name, if it already hasn't been given
-          @command.command_name ||= command_name
-
-          until scanner.eos?
-            # skip whitespace
-            scanner.skip(/\s+/)
-
-            # skip any options
-            scanner.skip(/-[a-zA-Z0-9_-]+\s+/)
-
-            argument = nil
-            keywords = {}
-
-            # detect optional openning [ or {
-            if scanner.skip(/[\[\{]\s*/)
-              keywords[:required] = false
-            end
-
-            argument = scanner.scan(ARGUMENT_NAME)
-
-            if scanner.skip(/\s*#{DOT_DOT_DOT}\s*/)
-              keywords[:repeats] = true
-            elsif scanner.skip(/,#{DOT_DOT_DOT}\s*/)
-              keywords[:repeats] = true
-              keywords[:type]    = Types::List.new(',')
-            end
-
-            if keywords[:required] == false
-              # skip the closing ] or }
-              scanner.skip(/[\]\}]\s*/)
-            end
-
-            if scanner.skip(/\s*#{DOT_DOT_DOT}\s*/)
-              keywords[:repeats] = true
-            end
-
-            if argument
-              name = argument.downcase.to_sym
-
-              # ignore [OPTIONS] or [opts]
-              unless (name == :option || name == :options || name == :opts)
-                @command.argument(name,**keywords)
-              end
+          nodes.each do |node|
+            p node
+            if (command_name = node[:command_name])
+              # optionally set the program name, if it already hasn't been given
+              @command.command_name ||= command_name
             else
-              warn "could not scan argument name at: #{scanner.rest}"
+              if node[:optional]
+                argument = node[:optional][:argument]
+                keywords = {required: false}
+              else
+                argument = node[:argument]
+                keywords = {}
+              end
+
+              if argument
+                if node[:repeats] || argument[:repeats]
+                  keywords[:repeats] = true
+                end
+
+                name = argument[:name].to_s.downcase.to_sym
+
+                # ignore [OPTIONS] or [opts]
+                unless (name == :option || name == :options || name == :opts)
+                  @command.argument(name,**keywords)
+                end
+              end
             end
           end
         end
@@ -135,7 +112,7 @@ module CommandMapper
           tree   = begin
                      parser.parse(line)
                    rescue Parslet::ParseFailed => error
-                     warn "could not parse line: #{line}"
+                     warn "could not parse options: #{line}"
                      warn error.parse_failure_cause.ascii_tree
                      return
                    end
