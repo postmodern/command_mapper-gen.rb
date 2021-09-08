@@ -81,11 +81,13 @@ module CommandMapper
           (space >> value_container) |
           # "=VALUE"
           (str('=').as(:equals) >> value_container) |
-          # "[=VALUE]"
           (
-            str('[') >> str('=').as(:equals) >>
-            value_container >>
-            str(']')
+            str('[') >> (
+              # "[=VALUE]"
+              (str('=').as(:equals) >> value_container) |
+              # "[VALUE]"
+              value_container
+            ) >> str(']')
           ).as(:optional)
         end
 
