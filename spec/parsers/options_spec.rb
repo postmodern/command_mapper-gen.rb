@@ -3,61 +3,67 @@ require 'command_mapper/gen/parsers/options'
 
 describe CommandMapper::Gen::Parsers::Options do
   describe "#name" do
-    subject { super().name.parse(name) }
+    subject { super().name }
 
     context "when given a uppercase name" do
       context "and it's a single character" do
-        let(:name) { 'A' }
+        let(:string) { 'A' }
 
         it "must parse it" do
-          expect(subject).to eq(name)
+          expect(subject.parse(string)).to eq(string)
         end
       end
 
       context "and it's multiple characters" do
-        let(:name) { 'ABC' }
+        let(:string) { 'ABC' }
 
         it "must parse it" do
-          expect(subject).to eq(name)
+          expect(subject.parse(string)).to eq(string)
         end
 
         context "but it starts with a digit" do
-          let(:name) { '1FOO' }
+          let(:string) { '1FOO' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
 
         context "and it contains a digit" do
-          let(:name) { 'FOO1' }
+          let(:string) { 'FOO1' }
 
           it "must not parse it" do
-            expect(subject).to eq(name)
+            expect(subject.parse(string)).to eq(string)
           end
         end
 
         context "but it starts with a '_'" do
-          let(:name) { '_FOO' }
+          let(:string) { '_FOO' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
 
         context "and it contains a '_'" do
-          let(:name) { 'FOO_BAR' }
+          let(:string) { 'FOO_BAR' }
 
           it "must parse it" do
-            expect(subject).to eq(name)
+            expect(subject.parse(string)).to eq(string)
           end
         end
 
         context "but it contains a '-'" do
-          let(:name) { 'FOO-BAR' }
+          let(:string) { 'FOO-BAR' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
       end
@@ -65,57 +71,63 @@ describe CommandMapper::Gen::Parsers::Options do
 
     context "when given a lowercase name" do
       context "and it's a single character" do
-        let(:name) { 'a' }
+        let(:string) { 'a' }
 
         it "must parse it" do
-          expect(subject).to eq(name)
+          expect(subject.parse(string)).to eq(string)
         end
       end
 
       context "and it's multiple characters" do
-        let(:name) { 'abc' }
+        let(:string) { 'abc' }
 
         it "must parse it" do
-          expect(subject).to eq(name)
+          expect(subject.parse(string)).to eq(string)
         end
 
         context "but it starts with a digit" do
-          let(:name) { '1foo' }
+          let(:string) { '1foo' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
 
         context "and it contains a digit" do
-          let(:name) { 'foo1' }
+          let(:string) { 'foo1' }
 
           it "must not parse it" do
-            expect(subject).to eq(name)
+            expect(subject.parse(string)).to eq(string)
           end
         end
 
         context "but it starts with a '_'" do
-          let(:name) { '_foo' }
+          let(:string) { '_foo' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
 
         context "and it contains a '_'" do
-          let(:name) { 'foo_bar' }
+          let(:string) { 'foo_bar' }
 
           it "must parse it" do
-            expect(subject).to eq(name)
+            expect(subject.parse(string)).to eq(string)
           end
         end
 
         context "and it contains a '-'" do
-          let(:name) { 'foo-bar' }
+          let(:string) { 'foo-bar' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
       end
@@ -123,49 +135,55 @@ describe CommandMapper::Gen::Parsers::Options do
 
     context "when given a capitalized name" do
       context "and it's multiple characters" do
-        let(:name) { 'Abc' }
+        let(:string) { 'Abc' }
 
         it "must parse it" do
-          expect(subject).to eq(name)
+          expect(subject.parse(string)).to eq(string)
         end
 
         context "but it starts with a digit" do
-          let(:name) { '1Foo' }
+          let(:string) { '1Foo' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
 
         context "and it contains a digit" do
-          let(:name) { 'Foo1' }
+          let(:string) { 'Foo1' }
 
           it "must not parse it" do
-            expect(subject).to eq(name)
+            expect(subject.parse(string)).to eq(string)
           end
         end
 
         context "but it starts with a '_'" do
-          let(:name) { '_Foo' }
+          let(:string) { '_Foo' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
 
         context "and it contains a '_'" do
-          let(:name) { 'Foo_bar' }
+          let(:string) { 'Foo_bar' }
 
           it "must parse it" do
-            expect(subject).to eq(name)
+            expect(subject.parse(string)).to eq(string)
           end
         end
 
         context "and it contains a '-'" do
-          let(:name) { 'Foo-bar' }
+          let(:string) { 'Foo-bar' }
 
           it "must not parse it" do
-            expect { subject }.to raise_error(Parslet::ParseFailed)
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
           end
         end
       end
@@ -173,13 +191,13 @@ describe CommandMapper::Gen::Parsers::Options do
   end
 
   describe "#literal_values" do
-    subject { super().literal_values.parse(string) }
+    subject { super().literal_values }
 
     context "when given 'foo'" do
       let(:string)   { "foo" }
 
       it "must not parse the single name" do
-        expect { subject }.to raise_error(Parslet::ParseFailed)
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
       end
     end
 
@@ -189,7 +207,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string)   { "#{literal1}|#{literal2}" }
 
       it "must parse both literal string values" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             literal_values: [
               {string: literal1},
@@ -207,7 +225,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string)   { "#{literal1}|#{literal2}|#{literal3}" }
 
       it "must parse both literal string values" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             literal_values: [
               {string: literal1},
@@ -221,7 +239,7 @@ describe CommandMapper::Gen::Parsers::Options do
   end
 
   describe "#list" do
-    subject { super().list.parse(string) }
+    subject { super().list }
 
     context "when given 'VALUE,...'" do
       let(:separator) { ',' }
@@ -229,7 +247,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string)    { "#{name}#{separator}..." }
 
       it "must parse the list item name and separator" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             list: {
               name:      name,
@@ -242,14 +260,18 @@ describe CommandMapper::Gen::Parsers::Options do
   end
 
   describe "#key_value" do
-    subject { super().key_value.parse(string) }
+    subject { super().key_value }
 
     context "when given 'KEY:VALUE'" do
       let(:separator) { ':' }
       let(:string)    { "key#{separator}value" }
 
       it "must parse the key:value and separator" do
-        expect(subject).to eq({key_value: {separator: separator}})
+        expect(subject.parse(string)).to eq(
+          {
+            key_value: {separator: separator}
+          }
+        )
       end
     end
 
@@ -258,20 +280,24 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string)    { "key#{separator}value" }
 
       it "must parse the key:value and separator" do
-        expect(subject).to eq({key_value: {separator: separator}})
+        expect(subject.parse(string)).to eq(
+          {
+            key_value: {separator: separator}
+          }
+        )
       end
     end
   end
 
   describe "#value" do
-    subject { super().value.parse(string) }
+    subject { super().value }
 
     context "when given 'NAME,...'" do
       let(:name)   { "NAME"        }
       let(:string) { "#{name},..." }
 
       it "must parse the value as a list" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             value: {
               list: {name: name, separator: ','}
@@ -288,7 +314,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string)    { "#{key}#{separator}#{value}" }
 
       it "must parse the value as a list" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             value: {
               key_value: {separator: separator}
@@ -305,7 +331,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string)    { "#{key}#{separator}#{value}" }
 
       it "must parse the value as a list" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             value: {
               key_value: {separator: separator}
@@ -321,7 +347,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{str1}|#{str2}" }
 
       it "must parse the list of literal string values" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             value: {
               literal_values: [
@@ -339,7 +365,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { name   }
 
       it "must parse the option's value name" do
-        expect(subject).to eq({value: {name: name}})
+        expect(subject.parse(string)).to eq({value: {name: name}})
       end
     end
 
@@ -348,20 +374,24 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { name   }
 
       it "must parse the option's value name" do
-        expect(subject).to eq({value: {name: name}})
+        expect(subject.parse(string)).to eq({value: {name: name}})
       end
     end
   end
 
   describe "#value_container" do
-    subject { super().value_container.parse(string) }
+    subject { super().value_container }
 
     context "when given '{NAME}'" do
       let(:name)   { "NAME"      }
       let(:string) { "{#{name}}" }
 
       it "must parse the value within the { }" do
-        expect(subject).to eq({value: {name: name}})
+        expect(subject.parse(string)).to eq(
+          {
+            value: {name: name}
+          }
+        )
       end
     end
 
@@ -370,7 +400,11 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "<#{name}>" }
 
       it "must parse the value within the < >" do
-        expect(subject).to eq({value: {name: name}})
+        expect(subject.parse(string)).to eq(
+          {
+            value: {name: name}
+          }
+        )
       end
     end
 
@@ -379,7 +413,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "[#{name}]" }
 
       it "must parse the optional value within the [ ]" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             optional: {
               value: {name: name}
@@ -394,7 +428,11 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{name}" }
 
       it "must return the value" do
-        expect(subject).to eq({value: {name: name}})
+        expect(subject.parse(string)).to eq(
+          {
+            value: {name: name}
+          }
+        )
       end
     end
   end
@@ -404,13 +442,13 @@ describe CommandMapper::Gen::Parsers::Options do
     let(:long_flag)  { '--opt' }
     let(:value)      { 'VALUE' }
 
-    subject { super().option.parse(string) }
+    subject { super().option }
 
     context "when given '-o'" do
       let(:string) { short_flag }
 
       it "must capture the short flag" do
-        expect(subject).to eq({short_flag: short_flag})
+        expect(subject.parse(string)).to eq({short_flag: short_flag})
       end
     end
 
@@ -418,7 +456,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{short_flag} #{value}" }
 
       it "must capture short flag and argument name" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             short_flag: short_flag,
             value: {name: value}
@@ -431,7 +469,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{short_flag}=#{value}" }
 
       it "must capture the short flag, equals, and value" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             short_flag: short_flag,
             equals: '=',
@@ -445,7 +483,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { long_flag }
 
       it "must capture the long flag" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             long_flag: long_flag
           }
@@ -457,7 +495,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{long_flag} #{value}" }
 
       it "must capture the long flag and value" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             long_flag: long_flag,
             value: {name: value}
@@ -470,7 +508,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{long_flag}=#{value}" }
 
       it "must capture the long flag, equals, and value" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             long_flag: long_flag,
             equals: '=',
@@ -484,7 +522,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{short_flag}, #{long_flag}" }
 
       it "must capture the short flag and long flag" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag
@@ -498,7 +536,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{short_flag}, #{long_flag}, --opt2, --opt3" }
 
       it "must only capture the short flag and first long flag" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag
@@ -511,7 +549,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{short_flag}, #{long_flag} #{value}" }
 
       it "must capture the short flag, long flag, and value" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -525,7 +563,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:string) { "#{short_flag}, #{long_flag}=#{value}" }
 
       it "must capture the short flag, long flag, equals, and value" do
-        expect(subject).to eq(
+        expect(subject.parse(string)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -538,7 +576,7 @@ describe CommandMapper::Gen::Parsers::Options do
   end
 
   describe "#option_line" do
-    subject { super().option_line.parse(line) }
+    subject { super().option_line }
 
     let(:short_flag) { '-o'    }
     let(:long_flag)  { '--opt' }
@@ -548,7 +586,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:line) { "    #{short_flag}, #{long_flag}=#{value}" }
 
       it "must parse the options" do
-        expect(subject).to eq(
+        expect(subject.parse(line)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -563,7 +601,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:line) { " #{short_flag}, #{long_flag}=#{value}" }
 
       it "must parse the options" do
-        expect(subject).to eq(
+        expect(subject.parse(line)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -578,7 +616,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:line) { "    #{short_flag}, #{long_flag}=#{value}" }
 
       it "must parse the options" do
-        expect(subject).to eq(
+        expect(subject.parse(line)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -593,7 +631,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:line) { "\t#{short_flag}, #{long_flag}=#{value}" }
 
       it "must parse the options" do
-        expect(subject).to eq(
+        expect(subject.parse(line)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -609,7 +647,7 @@ describe CommandMapper::Gen::Parsers::Options do
       let(:line)    { "  #{short_flag}, #{long_flag}=#{value}\t#{summary}" }
 
       it "must parse the options and ignore the summary text" do
-        expect(subject).to eq(
+        expect(subject.parse(line)).to eq(
           {
             short_flag: short_flag,
             long_flag:  long_flag,
@@ -623,7 +661,7 @@ describe CommandMapper::Gen::Parsers::Options do
         let(:line)    { "  #{short_flag}, #{long_flag}=#{value}  #{summary}" }
 
         it "must parse the options and ignore the summary text" do
-          expect(subject).to eq(
+          expect(subject.parse(line)).to eq(
             {
               short_flag: short_flag,
               long_flag:  long_flag,
@@ -638,7 +676,7 @@ describe CommandMapper::Gen::Parsers::Options do
         let(:line)    { "  #{short_flag}, #{long_flag}=#{value}\t#{summary}" }
 
         it "must parse the options and ignore the summary text" do
-          expect(subject).to eq(
+          expect(subject.parse(line)).to eq(
             {
               short_flag: short_flag,
               long_flag:  long_flag,
@@ -653,7 +691,7 @@ describe CommandMapper::Gen::Parsers::Options do
         let(:line)    { "  #{short_flag}, #{long_flag}=#{value}\t  #{summary}" }
 
         it "must parse the options and ignore the summary text" do
-          expect(subject).to eq(
+          expect(subject.parse(line)).to eq(
             {
               short_flag: short_flag,
               long_flag:  long_flag,
