@@ -1,19 +1,9 @@
-require 'parslet'
+require 'command_mapper/gen/parsers/common'
 
 module CommandMapper
   module Gen
     module Parsers
-      class Usage < Parslet::Parser
-
-        rule(:space)  { str(' ')    }
-        rule(:space?) { space.maybe }
-
-        rule(:capitalized_name) { match['A-Z'] >> match['a-z0-9_'].repeat(1) }
-        rule(:lowercase_name)   { match['a-z'] >> match['a-z0-9_'].repeat(0) }
-        rule(:uppercase_name)   { match['A-Z'] >> match['A-Z0-9_'].repeat(0) }
-
-        rule(:ellipsis)  { str('...') }
-        rule(:ellipsis?) { (space? >> ellipsis.as(:repeats)).maybe }
+      class Usage < Common
 
         rule(:capitalized_word) { match['A-Z'] >> match['a-z'].repeat(1) }
         rule(:lowercase_word)   { match['a-z'].repeat(1)                 }
@@ -28,22 +18,12 @@ module CommandMapper
           ).as(:argument)
         end
 
-        rule(:short_flag) do
-          (str('-') >> match['a-zA-Z0-9#']).as(:short_flag)
-        end
-
         rule(:short_flags) do
           (str('-') >> match['a-zA-Z0-9#'].repeat(2)).as(:short_flags)
         end
 
-        rule(:long_flag) do
-          (
-            str('--') >> match['a-zA-Z'] >> match['a-zA-Z0-9_-'].repeat(0)
-          ).as(:long_flag)
-        end
-
         rule(:flag) do
-          (long_flag | short_flags | short_flag)
+          (long_flag.as(:long_flag) | short_flags | short_flag.as(:short_flag))
         end
 
         rule(:option_value_string) do

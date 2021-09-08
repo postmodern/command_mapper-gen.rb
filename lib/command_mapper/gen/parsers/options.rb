@@ -1,17 +1,11 @@
-require 'parslet'
+require 'command_mapper/gen/parsers/common'
 
 module CommandMapper
   module Gen
     module Parsers
-      class Options < Parslet::Parser
+      class Options < Common
 
-        rule(:space)  { match[' '] }
-        rule(:spaces) { space.repeat(1) }
-        rule(:space?) { space.maybe }
-
-        rule(:name) { match['a-zA-Z'] >> match['a-zA-Z0-9_'].repeat(0) }
-
-        rule(:ellipsis) { str('...') }
+        rule(:name) { lowercase_name | capitalized_name | uppercase_name }
 
         rule(:literal_values) do
           (
@@ -90,9 +84,6 @@ module CommandMapper
             ) >> str(']')
           ).as(:optional)
         end
-
-        rule(:long_flag)  { str('--') >> match["a-zA-Z0-9_-"].repeat(2) }
-        rule(:short_flag) { str('-')  >> match['a-zA-Z0-9'].repeat(1)   }
 
         rule(:long_option) do
           # "--option" or "--option VALUE" or "--option=VALUE"

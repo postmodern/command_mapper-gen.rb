@@ -121,7 +121,7 @@ describe CommandMapper::Gen::Parsers::Options do
       end
     end
 
-    context "when given a mixed-case name" do
+    context "when given a capitalized name" do
       context "and it's multiple characters" do
         let(:name) { 'Abc' }
 
@@ -154,7 +154,7 @@ describe CommandMapper::Gen::Parsers::Options do
         end
 
         context "and it contains a '_'" do
-          let(:name) { 'Foo_Bar' }
+          let(:name) { 'Foo_bar' }
 
           it "must parse it" do
             expect(subject).to eq(name)
@@ -162,7 +162,7 @@ describe CommandMapper::Gen::Parsers::Options do
         end
 
         context "and it contains a '-'" do
-          let(:name) { 'Foo-Bar' }
+          let(:name) { 'Foo-bar' }
 
           it "must not parse it" do
             expect { subject }.to raise_error(Parslet::ParseFailed)
