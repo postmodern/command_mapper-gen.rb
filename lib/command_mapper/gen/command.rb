@@ -121,7 +121,7 @@ module CommandMapper
           lines << "end"
         end
 
-        return lines.join($/)
+        return lines.join($/) + $/
       end
 
       #
