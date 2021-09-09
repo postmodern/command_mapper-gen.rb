@@ -84,7 +84,11 @@ module CommandMapper
         end
 
         rule(:optional_group) do
-          str('[') >> space? >> args.as(:optional) >> space? >> str(']')
+          (
+            str('[') >> space? >>
+              args >>
+            space? >> str(']') >> ellipsis?
+          ).as(:optional)
         end
 
         rule(:arg) do
@@ -98,8 +102,10 @@ module CommandMapper
             # "{...}"
             curly_braces_group |
             # "[...]"
-            optional_group
-          ) >> ellipsis?
+            optional_group |
+            # "..."
+            ellipsis
+          )
         end
 
         rule(:arg_separator) do
