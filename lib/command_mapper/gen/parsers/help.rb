@@ -71,7 +71,6 @@ module CommandMapper
                    end
 
           nodes.each do |node|
-            p node
             if (command_name = node[:command_name])
               # optionally set the program name, if it already hasn't been given
               @command.command_name ||= command_name
