@@ -55,6 +55,26 @@ module CommandMapper
         end
 
         #
+        # Prints a parser error.
+        #
+        # @param [String] line
+        #   The line that could not be parsed.
+        #
+        # @param [Parslet::ParseFailed] error
+        #   The parsing error.
+        #
+        def print_parser_error(line,error)
+          warn "failed to parse line:"
+          warn ""
+          warn "  #{line}"
+
+          error.parse_failure_cause.ascii_tree.each_line do |backtrace_line|
+            warn "  #{backtrace_line}"
+          end
+          warn ""
+        end
+
+        #
         # Parses a `usage: ...` string into {#command}.
         #
         # @param [String] usage
@@ -65,8 +85,7 @@ module CommandMapper
           nodes = begin
                     parser.parse(usage)
                    rescue Parslet::ParseFailed => error
-                     warn "could not parse usage: #{usage}"
-                     warn error.parse_failure_cause.ascii_tree
+                     print_parser_error(usage,error)
                      return
                    end
 
@@ -111,8 +130,7 @@ module CommandMapper
           tree   = begin
                      parser.parse(line)
                    rescue Parslet::ParseFailed => error
-                     warn "could not parse options: #{line}"
-                     warn error.parse_failure_cause.ascii_tree
+                     print_parser_error(line,error)
                      return
                    end
 
