@@ -40,7 +40,7 @@ module CommandMapper
       #
       def to_ruby
         ruby = "argument #{@name.inspect}"
-        ruby << ", repeats: #{@repeats}" unless @repeats.nil?
+        ruby << ", repeats: #{@repeats.inspect}" unless @repeats.nil?
 
         unless (keywords = super()).empty?
           ruby << ", #{keywords}"

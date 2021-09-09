@@ -12,7 +12,7 @@ module CommandMapper
       # @return [String]
       attr_reader :flag
 
-      # @return [Boolean, nil]
+      # @return [Boolean, :equals, nil]
       attr_reader :equals
 
       # @return [Boolean, nil]
@@ -27,7 +27,7 @@ module CommandMapper
       # @param [String] flag
       #   The option flag.
       #
-      # @param [Boolean, nil] equals
+      # @param [Boolean, :optional, nil] equals
       #
       # @param [Boolean, nil] repeats
       #
@@ -55,8 +55,8 @@ module CommandMapper
           fixme = "name"
         end
 
-        ruby << ", equals: #{@equals}"         unless @equals.nil?
-        ruby << ", repeats: #{@repeats}"       unless @repeats.nil?
+        ruby << ", equals: #{@equals.inspect}"   unless @equals.nil?
+        ruby << ", repeats: #{@repeats.inspect}" unless @repeats.nil?
 
         unless @value.nil?
           unless (value_keywords = @value.to_ruby).empty?

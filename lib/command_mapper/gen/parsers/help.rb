@@ -1,6 +1,6 @@
+require 'command_mapper/gen/parsers/options'
+require 'command_mapper/gen/parsers/usage'
 require 'command_mapper/gen/command'
-
-require 'strscan'
 
 module CommandMapper
   module Gen
@@ -54,195 +54,123 @@ module CommandMapper
           parse(command,output) unless (output.nil? || output.empty?)
         end
 
-        STRING_LITERAL = /[a-z0-9_-]+/
-
-        ARGUMENT_NAME = /[a-z_]+|[A-Z_]+|\<[a-z]+[ a-z_-]*\>/
-
-        DOT_DOT_DOT = /\.\.\./
-
+        #
+        # Parses a `usage: ...` string into {#command}.
         #
         # @param [String] usage
         #
-        # @param [Command] command
-        #
         def parse_usage(usage)
-          scanner = StringScanner.new(usage)
+          parser = Usage.new
 
-          # skip the program name
-          @command.command_name ||= scanner.scan(/\w+/)
+          nodes = begin
+                    parser.parse(usage)
+                   rescue Parslet::ParseFailed => error
+                     warn "could not parse usage: #{usage}"
+                     warn error.parse_failure_cause.ascii_tree
+                     return
+                   end
 
-          until scanner.eos?
-            # skip whitespace
-            scanner.skip(/\s+/)
-
-            # skip any options
-            scanner.skip(/-[a-zA-Z0-9_-]+\s+/)
-
-            argument = nil
-            keywords = {}
-
-            # detect optional openning [ or {
-            if scanner.skip(/[\[\{]/)
-              keywords[:required] = false
-            end
-
-            # skip optional space after [ or {
-            scanner.skip(/\s+/)
-
-            argument = scanner.scan(ARGUMENT_NAME)
-
-            if scanner.skip(/\s*#{DOT_DOT_DOT}/)
-              keywords[:repeats] = true
-              scanner.skip(/\s+/)
-            elsif scanner.skip(/,#{DOT_DOT_DOT}/)
-              keywords[:repeats] = true
-              keywords[:type]    = Types::List.new(',')
-            end
-
-            if keywords[:required] == false
-              # skip the closing ] or }
-              scanner.skip(/[\]\}]/)
-            end
-
-            if scanner.skip(/\s*#{DOT_DOT_DOT}/)
-              keywords[:repeats] = true
-            end
-
-            if argument
-              name = argument.downcase.to_sym
-
-              # ignore [OPTIONS] or [opts]
-              unless (name == :option || name == :options || name == :opts)
-                @command.argument(name,**keywords)
-              end
+          nodes.each do |node|
+            if (command_name = node[:command_name])
+              # optionally set the program name, if it already hasn't been given
+              @command.command_name ||= command_name
             else
-              warn "could not scan argument name at: #{scanner.rest}"
+              if node[:optional]
+                argument = node[:optional][:argument]
+                keywords = {required: false}
+              else
+                argument = node[:argument]
+                keywords = {}
+              end
+
+              if argument
+                if node[:repeats] || argument[:repeats]
+                  keywords[:repeats] = true
+                end
+
+                name = argument[:name].to_s.downcase.to_sym
+
+                # ignore [OPTIONS] or [opts]
+                unless (name == :option || name == :options || name == :opts)
+                  @command.argument(name,**keywords)
+                end
+              end
             end
           end
         end
 
-        def parse_option_value(arg)
-          scanner  = StringScanner.new(arg)
-          value    = {}
-          keywords = {value: value}
+        #
+        # Parses an option line (ex: `    -o, --opt VALUE      Blah blah lbah`)
+        # into {#command}.
+        #
+        # @param [String] line
+        #   The option line to parse.
+        #
+        def parse_option_line(line)
+          parser = Parsers::Options.new
+          tree   = begin
+                     parser.parse(line)
+                   rescue Parslet::ParseFailed => error
+                     warn "could not parse options: #{line}"
+                     warn error.parse_failure_cause.ascii_tree
+                     return
+                   end
 
-          # skip any opening [
-          if scanner.skip(/\[/)
-            value[:required] = false
-          end
+          flag = tree[:long_flag] || tree[:short_flag]
+          keywords = {}
 
-          # skip the = character
-          if scanner.skip(/=/)
+          if tree[:equals]
             keywords[:equals] = true
           end
 
-          name = scanner.scan(ARGUMENT_NAME)
+          if tree[:optional]
+            if tree[:optional][:equals]
+              keywords[:equals] = :optional
+            end
 
-          if scanner.skip(/,#{DOT_DOT_DOT}/)
-            # ,... detected
-            value[:type] = Types::List.new(',')
-          elsif scanner.skip(/=#{ARGUMENT_NAME}/)
-            # NAME=VALUE detected
-            value[:type] = Types::KeyValue.new('=')
-          elsif scanner.skip(/:#{ARGUMENT_NAME}/)
-            # NAME:VALUE detected
-            value[:type] = Types::KeyValue.new(':')
-          elsif scanner.skip(/\|/)
-            # foo|bar detected
-            next_name = scanner.scan(ARGUMENT_NAME)
+            value = tree[:optional][:value]
 
-            case name
-            when 'yes', 'y'
-              if next_name == 'no' || next_name == 'n'
-                # yes|no detected
-                value[:type] = Types::Map.new(true => name, false => next_name)
-              end
-            when 'enabled'
-               if next_name == 'disabled'
-                # enabled|disabled detected
-               value[:type] = Types::Map.new(true => name, false => next_name)
-              end
-            else
-              # FOO|BAR detected
+            keywords[:value] = {required: false}
+          elsif tree[:value]
+            value = tree[:value]
+
+            keywords[:value] = {}
+          end
+
+          if value
+            if value[:list]
+              separator = value[:list][:separator]
+
+              keywords[:value][:type] = Types::List.new(separator.to_s)
+            elsif value[:key_value]
+              separator = value[:key_value][:separator]
+
+              keywords[:value][:type] = Types::KeyValue.new(separator.to_s)
+            elsif value[:literal_values]
               map = {}
 
-              map[name.to_sym]      = name      if name =~ STRING_LITERAL
-              map[next_name.to_sym] = next_name if name =~ STRING_LITERAL
-
-              # consume the rest of the |... choises
-              while scanner.skip(/\|/)
-                next_name = scanner.scan(ARGUMENT_NAME)
-
-                if name =~ STRING_LITERAL
-                  map[next_name.to_sym] = next_name
-                end
+              value[:literal_values].each do |node|
+                map[node[:string].to_sym] = node[:string].to_s
               end
 
-              value[:type] = Types::Map.new(map)
+              # perform some value coercion
+              case map
+              when {yes: 'yes', no: 'no'}
+                map = {true => 'yes', false => 'no'}
+              when {y: 'y', n: 'n'}
+                map = {true => 'y', false => 'n'}
+              when {enabled: 'enabled', disabled: 'disabled'}
+                map = {true => 'enabled', false => 'disabled'}
+              end
+
+              keywords[:value][:type] = Types::Map.new(map)
+            elsif value[:name]
+              # NOTE: maybe use this in the future
             end
           end
 
-          if value[:required] == false
-            # skip the closing ]
-            scanner.skip(/\]/)
-          end
-
-          return keywords
-        end
-
-        #
-        # @param [String] usage
-        #
-        # @param [Command] command
-        #
-        def parse_option(line)
-          scanner = StringScanner.new(line)
-
-          flag     = nil
-          keywords = {}
-
-          # skip whitespace
-          scanner.skip(/\s+/)
-
-          # attempt to scan the short option
-          if (short_flag = scanner.scan(/-[a-zA-Z0-9][a-zA-Z0-9_-]*/))
-            # is there a space after the short option?
-            if scanner.skip(/\s/)
-              # is there an argument name?
-              if (arg = scanner.scan(/\S+/))
-                # parse the argument name following the short option
-                keywords.merge!(parse_option_value(arg))
-              end
-            end
-
-            # skip there a ','?
-            scanner.skip(/,\s+/)
-          end
-
-          # scan the long option
-          if (long_flag = scanner.scan(/--[a-zA-Z][a-zA-Z0-9_-]+/))
-            # attempt to skip the '='
-            if scanner.skip(/=/)
-              keywords[:equals] = true
-
-              # scan the option's ARG
-              if (arg = scanner.scan(/\S+/))
-                # scan the option's ARG
-                keywords.merge!(parse_option_value(arg))
-              end
-            else
-              # no '=' character? skip the whitespace character
-              if scanner.skip(/\s/)
-                if (arg = scanner.scan(/\S+/))
-                  # scan the option's ARG
-                  keywords.merge!(parse_option_value(arg))
-                end
-              end
-            end
-          end
-
-          if (flag = long_flag || short_flag)
-            @command.option(flag,**keywords)
+          if flag
+            @command.option(flag.to_s, **keywords)
           else
             warn "could not detect option flag: #{line}"
           end
@@ -253,16 +181,17 @@ module CommandMapper
         OPTION_LINE = /^\s+-/
 
         #
-        # @param [String] output
+        # Parses `--help` output into {#command}.
         #
-        # @param [Command] command
+        # @param [String] output
+        #   The full `--help` output.
         #
         def parse(output)
           output.each_line do |line|
             if line =~ USAGE
               parse_usage(line.sub(USAGE,'').chomp)
             elsif line =~ OPTION_LINE
-              parse_option(line.chomp)
+              parse_option_line(line.chomp)
             end
           end
         end

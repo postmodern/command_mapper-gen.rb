@@ -104,6 +104,11 @@ end
 
 ## Examples
 
+## Requirements
+
+* [ruby] >= 2.0.0
+* [parslet] ~> 2.0
+
 ## Install
 
 ```shell
@@ -123,3 +128,5 @@ Copyright (c) 2021 Hal Brodigan
 See {file:LICENSE.txt} for license information.
 
 [command_mapper]: https://github.com/postmodern/command_mapper.rb#readme
+[ruby]: htt[s://www.ruby-lang.org/
+[parslet]: https://github.com/kschiess/parslet#readme
