@@ -29,6 +29,7 @@ module CommandMapper
         rule(:option_value_string) do
           match['a-z0-9_-'].repeat(1).as(:string)
         end
+
         rule(:option_value_strings) do
           option_value_string >> (
             (str(',') >> option_value_string).repeat(1) |
@@ -42,10 +43,16 @@ module CommandMapper
 
         rule(:option_value) { option_value_strings | option_value_name }
 
+        rule(:optional_option_value) do
+          str('[') >> space? >>
+            option_value.as(:optional) >>
+          space? >> str(']')
+        end
+
         rule(:option_value_container) do
           (str('{') >> space? >> option_value >> space? >> str('}')) |
-          (str('[') >> space? >> option_value >> space? >> str(']')) |
           (str('<') >> space? >> option_value >> space? >> str('>')) |
+          optional_option_value |
           option_value
         end
 
