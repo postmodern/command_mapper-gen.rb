@@ -171,7 +171,7 @@ describe CommandMapper::Gen::Parsers::Common do
       context "and it contains a '_' character" do
         let(:string) { 'Abb_bb' }
 
-        it "must not parse it" do
+        it "must parse it" do
           expect(subject.parse(string)).to eq(string)
         end
       end
@@ -200,7 +200,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given one lowercase character" do
       let(:string) { 'a' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -208,18 +208,18 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given multiple lowercase characters" do
       let(:string) { 'ab' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
  
       context "and it contains a '_' character" do
         let(:string) { 'abb_bb' }
 
-        it "must not parse it" do
+        it "must parse it" do
           expect(subject.parse(string)).to eq(string)
         end
       end
-   end
+    end
 
     context "when given a single uppercase characters" do
       let(:string) { 'A' }
