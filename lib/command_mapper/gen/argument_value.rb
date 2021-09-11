@@ -5,8 +5,8 @@ module CommandMapper
     #
     class ArgumentValue
 
-      # @return [Types::List, Types::KeyValue, nil]
-      attr_reader :type
+      # @return [Formats::List, Formats::KeyValue, nil]
+      attr_reader :format
 
       # @return [Boolean, nil]
       attr_reader :required
@@ -14,12 +14,12 @@ module CommandMapper
       #
       # Initializes the argument value.
       #
-      # @param [Types::List, Types::KeyValue, nil] type
+      # @param [Formats::List, Formats::KeyValue, nil] format
       #
       # @param [Boolean, nil] required
       #
-      def initialize(type: nil, required: nil)
-        @type     = type
+      def initialize(format: nil, required: nil)
+        @format   = format
         @required = required
       end
 
@@ -30,7 +30,7 @@ module CommandMapper
       #
       def to_ruby
         ruby = ""
-        ruby << "type: #{@type.to_ruby}"         unless @type.nil?
+        ruby << "format: #{@format.to_ruby}"         unless @format.nil?
         ruby << "required: #{@required.inspect}" unless @required.nil?
         ruby
       end

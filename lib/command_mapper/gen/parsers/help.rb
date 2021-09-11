@@ -159,11 +159,11 @@ module CommandMapper
             if value[:list]
               separator = value[:list][:separator]
 
-              keywords[:value][:type] = Types::List.new(separator.to_s)
+              keywords[:value][:format] = Formats::List.new(separator.to_s)
             elsif value[:key_value]
               separator = value[:key_value][:separator]
 
-              keywords[:value][:type] = Types::KeyValue.new(separator.to_s)
+              keywords[:value][:format] = Formats::KeyValue.new(separator.to_s)
             elsif value[:literal_values]
               map = {}
 
@@ -181,7 +181,7 @@ module CommandMapper
                 map = {true => 'enabled', false => 'disabled'}
               end
 
-              keywords[:value][:type] = Types::Map.new(map)
+              keywords[:value][:type] = Formats::Map.new(map)
             elsif value[:name]
               # NOTE: maybe use this in the future
             end

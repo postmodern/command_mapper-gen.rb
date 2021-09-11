@@ -1,10 +1,10 @@
 module CommandMapper
   module Gen
-    module Types
+    module Formats
       class List
 
         #
-        # Initializes the list type.
+        # Initializes the list format.
         #
         # @param [String] separator
         #   The separator character.
@@ -14,7 +14,7 @@ module CommandMapper
         end
 
         #
-        # Converts the list type to Ruby source code.
+        # Converts the list format to Ruby source code.
         #
         # @return [String]
         #

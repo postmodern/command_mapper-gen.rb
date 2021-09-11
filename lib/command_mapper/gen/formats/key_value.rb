@@ -1,10 +1,10 @@
 module CommandMapper
   module Gen
-    module Types
+    module Formats
       class KeyValue
 
         #
-        # Initializes the key-value type.
+        # Initializes the key-value format.
         #
         # @param [String] separator
         #   The separator character.
@@ -14,7 +14,7 @@ module CommandMapper
         end
 
         #
-        # Converts the map type to Ruby source code.
+        # Converts the map format to Ruby source code.
         #
         # @return [String]
         #
