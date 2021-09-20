@@ -125,7 +125,7 @@ module CommandMapper
 
           opts.separator ""
           opts.separator "Examples:"
-          opts.separator "    command_mapper-gen grep"
+          opts.separator "    #{PROGRAM_NAME} grep"
           opts.separator ""
         end
       end
