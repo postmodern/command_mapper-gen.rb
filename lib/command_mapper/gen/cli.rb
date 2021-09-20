@@ -114,7 +114,7 @@ module CommandMapper
           end
 
           opts.on('-V','--version','Print the version') do
-            puts "command_mapper-gen #{VERSION}"
+            puts "#{PROGRAM_NAME} #{VERSION}"
             exit
           end
 
