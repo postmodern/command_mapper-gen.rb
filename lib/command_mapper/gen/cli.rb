@@ -56,6 +56,9 @@ module CommandMapper
       #
       def self.run(argv=ARGV)
         new().run(argv)
+      rescue => error
+        print_backtrace(error)
+        exit -1
       end
 
       #
@@ -71,23 +74,13 @@ module CommandMapper
           @command = Command.new(command_name)
 
           @parsers.each do |parser|
-            begin
-              parser.run(command)
-            rescue => error
-              print_backtrace(error)
-              exit -1
-            end
+            parser.run(command)
           end
         else
           @command = Command.new
           parser   = Parsers::Help.new(command)
 
-          begin
-            parser.parse($stdin.read)
-          rescue => error
-            print_backtrace(error)
-            exit -1
-          end
+          parser.parse($stdin.read)
         end
 
         if (@command.options.empty? && @command.arguments.empty?)
