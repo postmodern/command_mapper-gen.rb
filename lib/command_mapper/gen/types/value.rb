@@ -51,7 +51,12 @@ module CommandMapper
         # @return [String, nil]
         #
         def to_ruby
-          if (keywords = to_ruby_keywords)
+          if (!@required.nil? && @allow_empty.nil? && @allow_blank.nil?)
+            case @required
+            when true  then ":required"
+            when false then ":optional"
+            end
+          elsif (keywords = to_ruby_keywords)
             "{#{keywords}}"
           end
         end
