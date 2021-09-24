@@ -37,8 +37,8 @@ class Grep < CommandMapper::Command
   option "--fixed-strings"
   option "--basic-regexp"
   option "--perl-regexp"
-  option "--regexp", equals: true, value: true
-  option "--file", equals: true, value: true
+  option "--regexp", equals: true, value: :required
+  option "--file", equals: true, value: :required
   option "--ignore-case"
   option "--no-ignore-case"
   option "--word-regexp"
@@ -47,57 +47,43 @@ class Grep < CommandMapper::Command
   option "--no-messages"
   option "--invert-match"
   option "--version"
-  option "--help", value: true
-  option "--max-count", equals: true, value: true
+  option "--help"
+  option "--max-count", equals: true, value: :required
   option "--byte-offset"
   option "--line-number"
   option "--line-buffered"
   option "--with-filename"
   option "--no-filename"
-  option "--label", equals: true, value: true
+  option "--label", equals: true, value: :required
   option "--only-matching"
   option "--quiet"
-  option "--binary-files", value: true
+  option "--binary-files", equals: true, value: :required
   option "--text"
   option "-I", name: 	# FIXME: name
-  option "--directories", equals: true, value: true
-  option "--devices", equals: true, value: true
+  option "--directories", equals: true, value: :required
+  option "--devices", equals: true, value: :required
   option "--recursive"
   option "--dereference-recursive"
-  option "--include", equals: true, value: true
-  option "--exclude"
-  option "--exclude-from", equals: true, value: true
-  option "--exclude-dir", equals: true, value: true
-  option "--files-without-match"
+  option "--include", equals: true, value: :required
+  option "--exclude", equals: true, value: :required
+  option "--exclude-from", equals: true, value: :required
+  option "--exclude-dir", equals: true, value: :required
+  option "--files-without-match", value: :required
   option "--files-with-matches"
   option "--count"
   option "--initial-tab"
-  option "--null", value: true
-  option "--before-context", equals: true, value: true
-  option "--after-context", equals: true, value: true
-  option "--context", equals: true, value: true
-  option "-NUM"
-  option "--group-separator", equals: true, value: true
+  option "--null"
+  option "--before-context", equals: true, value: :required
+  option "--after-context", equals: true, value: :required
+  option "--context", equals: true, value: :required
+  option "--group-separator", equals: true, value: :required
   option "--no-group-separator"
-  option "--color"
-  option "--colour"
+  option "--color", equals: :optional, value: :optional
+  option "--colour", equals: :optional, value: :optional
   option "--binary"
-  option "-e", name: , value: true	# FIXME: name
-  option "-f", name: , value: true	# FIXME: name
-  option "-y", name: 	# FIXME: name
-  option "-m", name: , value: true	# FIXME: name
-  option "--unix-byte-offsets"
-  option "-print0"
-  option "-A", name: , value: true	# FIXME: name
-  option "-B", name: , value: true	# FIXME: name
-  option "-C", name: , value: true	# FIXME: name
-  option "-D", name: , value: true	# FIXME: name
-  option "-d", name: , value: true	# FIXME: name
 
-  argument :grep
-  argument :patterns, repeats: true
-  argument :file, repeats: true, required: false
-  argument :pattern_file, repeats: true
+  argument :patterns, value: :required
+  argument :file, value: :optional
 
 end
 ```
