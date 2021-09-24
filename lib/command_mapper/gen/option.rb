@@ -1,4 +1,4 @@
-require 'command_mapper/gen/option_value'
+require 'command_mapper/gen/types/value'
 
 module CommandMapper
   module Gen
@@ -18,7 +18,7 @@ module CommandMapper
       # @return [Boolean, nil]
       attr_reader :repeats
 
-      # @return [OptionValue, nil]
+      # @return [Value, nil]
       attr_reader :value
 
       #
@@ -36,9 +36,12 @@ module CommandMapper
       def initialize(flag, equals: nil, repeats: nil, value: nil)
         @flag    = flag
         @equals  = equals
+        @value   = case value
+                   when Types::Value then value
+                   when Hash         then Types::Value.new(**value)
+                   when nil          then nil
+                   end
         @repeats = repeats
-
-        @value = OptionValue.new(**value) if value
       end
 
       #
@@ -57,15 +60,7 @@ module CommandMapper
 
         ruby << ", equals: #{@equals.inspect}"   unless @equals.nil?
         ruby << ", repeats: #{@repeats.inspect}" unless @repeats.nil?
-
-        unless @value.nil?
-          unless (value_keywords = @value.to_ruby).empty?
-            ruby << ", value: {#{@value.to_ruby}}"
-          else
-            ruby << ", value: true"
-          end
-        end
-
+        ruby << ", value: #{@value.to_ruby}" if @value
         ruby << "\t# FIXME: #{fixme}" if fixme
         ruby
       end

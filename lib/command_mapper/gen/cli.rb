@@ -56,9 +56,6 @@ module CommandMapper
       #
       def self.run(argv=ARGV)
         new().run(argv)
-      rescue => error
-        print_backtrace(error)
-        exit -1
       end
 
       #
@@ -91,6 +88,9 @@ module CommandMapper
         if @output then @command.save(@output)
         else            puts command.to_ruby
         end
+      rescue => error
+        print_backtrace(error)
+        exit -1
       end
 
       #

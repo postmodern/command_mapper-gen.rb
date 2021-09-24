@@ -94,12 +94,14 @@ module CommandMapper
               # optionally set the program name, if it already hasn't been given
               @command.command_name ||= command_name
             else
+              keywords = {}
+
               if node[:optional]
                 argument = node[:optional][:argument]
-                keywords = {required: false}
+                keywords[:value] = {required: false}
               else
                 argument = node[:argument]
-                keywords = {}
+                keywords[:value] = {required: true}
               end
 
               if argument
@@ -146,43 +148,55 @@ module CommandMapper
               keywords[:equals] = :optional
             end
 
-            value = tree[:optional][:value]
-
+            value_node = tree[:optional][:value]
             keywords[:value] = {required: false}
           elsif tree[:value]
-            value = tree[:value]
-
-            keywords[:value] = {}
+            value_node = tree[:value]
+            keywords[:value] = {required: true}
           end
 
-          if value
-            if value[:list]
-              separator = value[:list][:separator]
+          if value_node
+            if value_node[:list]
+              separator = value_node[:list][:separator]
 
-              keywords[:value][:format] = Formats::List.new(separator.to_s)
-            elsif value[:key_value]
-              separator = value[:key_value][:separator]
+              keywords[:value] = Types::List.new(
+                separator: separator.to_s, **keywords[:value]
+              )
+            elsif value_node[:key_value]
+              separator = value_node[:key_value][:separator]
 
-              keywords[:value][:format] = Formats::KeyValue.new(separator.to_s)
-            elsif value[:literal_values]
+              keywords[:value] = Types::KeyValue.new(
+                separator: separator.to_s, **keywords[:value]
+              )
+            elsif value_node[:literal_values]
               map = {}
 
-              value[:literal_values].each do |node|
+              value_node[:literal_values].each do |node|
                 map[node[:string].to_sym] = node[:string].to_s
               end
 
               # perform some value coercion
               case map
+              when {yes: 'YES', no: 'NO'}
+                map = {true => 'YES', false => 'NO'}
+              when {yes: 'Yes', no: 'No'}
+                map = {true => 'Yes', false => 'No'}
               when {yes: 'yes', no: 'no'}
                 map = {true => 'yes', false => 'no'}
+              when {y: 'Y', n: 'N'}
+                map = {true => 'Y', false => 'N'}
               when {y: 'y', n: 'n'}
                 map = {true => 'y', false => 'n'}
+              when {enabled: 'ENABLED', disabled: 'DISABLED'}
+                map = {true => 'enabled', false => 'disabled'}
+              when {enabled: 'Enabled', disabled: 'Disabled'}
+                map = {true => 'enabled', false => 'disabled'}
               when {enabled: 'enabled', disabled: 'disabled'}
                 map = {true => 'enabled', false => 'disabled'}
               end
 
-              keywords[:value][:type] = Formats::Map.new(map)
-            elsif value[:name]
+              keywords[:value] = Types::Map.new(map, **keywords[:value])
+            elsif value_node[:name]
               # NOTE: maybe use this in the future
             end
           end
