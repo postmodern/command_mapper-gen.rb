@@ -67,6 +67,9 @@ module CommandMapper
       # @param [Array<String>] argv
       #   Command-line arguments.
       #
+      # @return [Integer]
+      #   The exit status of the command.
+      #
       def run(argv=ARGV)
         argv = begin
                  @option_parser.parse(argv)
