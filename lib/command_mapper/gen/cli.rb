@@ -54,6 +54,9 @@ module CommandMapper
       # @param [Array<String>] argv
       #   Command-line arguments.
       #
+      # @return [Integer]
+      #   The exit status of the command.
+      #
       def self.run(argv=ARGV)
         new().run(argv)
       end
@@ -82,15 +85,17 @@ module CommandMapper
 
         if (@command.options.empty? && @command.arguments.empty?)
           print_error "no options or arguments detected"
-          exit -2
+          return -2
         end
 
         if @output then @command.save(@output)
         else            puts command.to_ruby
         end
+
+        return 0
       rescue => error
         print_backtrace(error)
-        exit -1
+        return -1
       end
 
       #
