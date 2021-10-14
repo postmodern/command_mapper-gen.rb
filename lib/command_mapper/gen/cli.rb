@@ -68,7 +68,12 @@ module CommandMapper
       #   Command-line arguments.
       #
       def run(argv=ARGV)
-        argv = @option_parser.parse(argv)
+        argv = begin
+                 @option_parser.parse(argv)
+               rescue OptionParser::ParseError => error
+                 print_error(error.message)
+                 return -1
+               end
 
         if (command_name = argv.first)
           @command = Command.new(command_name)
