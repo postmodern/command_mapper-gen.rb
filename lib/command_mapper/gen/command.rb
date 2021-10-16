@@ -96,13 +96,12 @@ module CommandMapper
 
           lines << "class #{class_name} < CommandMapper::Command"
           lines << ""
-          lines << "  command #{@command_name.inspect}"
-          lines << ""
+          lines << "  command #{@command_name.inspect} do"
         end
 
         unless options.empty?
           options.each_value do |option|
-            lines << "  #{option.to_ruby}"
+            lines << "    #{option.to_ruby}"
           end
         end
 
@@ -112,11 +111,12 @@ module CommandMapper
 
         unless arguments.empty?
           arguments.each_value do |argument|
-            lines << "  #{argument.to_ruby}"
+            lines << "    #{argument.to_ruby}"
           end
         end
 
         if @command_name
+          lines << "  end"
           lines << ''
           lines << "end"
         end
