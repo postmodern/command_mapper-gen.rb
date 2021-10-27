@@ -1,5 +1,6 @@
 require 'command_mapper/gen/option'
 require 'command_mapper/gen/argument'
+require 'command_mapper/gen/types'
 
 module CommandMapper
   module Gen
