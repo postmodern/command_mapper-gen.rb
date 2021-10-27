@@ -23,7 +23,7 @@ module CommandMapper
       #
       # Initializes the parsed argument.
       #
-      # @param [String] name
+      # @param [Symbol] name
       #   The argument name.
       #
       # @param [Boolean, nil] repeats
