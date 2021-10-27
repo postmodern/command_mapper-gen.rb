@@ -5,6 +5,9 @@ module CommandMapper
     module Formats
       class Map < List
 
+        # @return [Hash{Object => String}]
+        attr_reader :map
+
         #
         # Initializes the map type.
         #
