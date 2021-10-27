@@ -3,7 +3,7 @@ require 'command_mapper/gen/types/value'
 module CommandMapper
   module Gen
     module Types
-      class Map < List
+      class Map < Value
 
         # @return [Hash{Object => String}]
         attr_reader :map
