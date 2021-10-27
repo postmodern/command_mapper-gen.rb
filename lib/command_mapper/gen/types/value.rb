@@ -3,12 +3,18 @@ module CommandMapper
     module Types
       class Value
 
+        # The `required` keyword.
+        #
         # @return [Boolean, nil]
         attr_reader :required
 
+        # The `allow_empty` keyword.
+        #
         # @return [Boolean, nil]
         attr_reader :allow_empty
 
+        # The `allow_blank` keyword.
+        #
         # @return [Boolean, nil]
         attr_reader :allow_blank
 
@@ -16,10 +22,13 @@ module CommandMapper
         # Initializes the value type.
         #
         # @param [Boolean, nil] required
+        #   The `required` keyword value.
         #
         # @param [Boolean, nil] allow_empty
+        #   The `allow_empty` keyword value.
         #
         # @param [Boolean, nil] allow_blank
+        #   The `allow_blank` keyword value.
         #
         def initialize(required: nil, allow_empty: nil, allow_blank: nil)
           @required    = required
@@ -33,7 +42,7 @@ module CommandMapper
         # @return [String, nil]
         #
         def to_ruby_keywords
-          unless (@required.nil? && @allow_empty.nil? && @allow_blank)
+          unless (@required.nil? && @allow_empty.nil? && @allow_blank.nil?)
             keywords = {}
             keywords[:required]    = @required    unless @required.nil?
             keywords[:allow_empty] = @allow_empty unless @allow_empty.nil?
