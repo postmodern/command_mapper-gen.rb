@@ -67,41 +67,34 @@ describe CommandMapper::Gen::Types::Value do
     end
 
     context "when more than one keyword is set" do
-      let(:keyword1) { :required }
-      let(:value1)   { true }
-      let(:keyword2) { :allow_empty }
-      let(:value2)   { true }
+      let(:required)    { true }
+      let(:allow_empty) { true }
 
       subject do
-        described_class.new(**{keyword1 => value1, keyword2 => value2})
+        described_class.new(required: required, allow_empty: allow_empty)
       end
 
       it "must return the set keyword and their values" do
         expect(subject.to_ruby_keywords).to eq(
-          "#{keyword1}: #{value1.inspect}, #{keyword2}: #{value2.inspect}"
+          "required: #{required.inspect}, allow_empty: #{allow_empty.inspect}"
         )
       end
     end
 
     context "when all keywords are set" do
-      let(:keyword1) { :required }
-      let(:value1)   { true }
-      let(:keyword2) { :allow_empty }
-      let(:value2)   { true }
-      let(:keyword3) { :allow_blank }
-      let(:value3)   { true }
+      let(:required)    { true }
+      let(:allow_empty) { true }
+      let(:allow_blank) { true }
 
       subject do
-        described_class.new(**{
-          keyword1 => value1,
-          keyword2 => value2,
-          keyword3 => value3
-        })
+        described_class.new(required:    required,
+                            allow_empty: allow_empty,
+                            allow_blank: allow_blank)
       end
 
       it "must return all set keywords and their values" do
         expect(subject.to_ruby_keywords).to eq(
-          "#{keyword1}: #{value1.inspect}, #{keyword2}: #{value2.inspect}, #{keyword3}: #{value3.inspect}"
+          "required: #{required.inspect}, allow_empty: #{allow_empty.inspect}, allow_blank: #{allow_blank.inspect}"
         )
       end
     end
@@ -127,24 +120,19 @@ describe CommandMapper::Gen::Types::Value do
     end
 
     context "when more than just required is set" do
-      let(:keyword1) { :required }
-      let(:value1)   { true }
-      let(:keyword2) { :allow_empty }
-      let(:value2)   { true }
-      let(:keyword3) { :allow_blank }
-      let(:value3)   { true }
+      let(:required)    { true }
+      let(:allow_empty) { true }
+      let(:allow_blank) { true }
 
       subject do
-        described_class.new(**{
-          keyword1 => value1,
-          keyword2 => value2,
-          keyword3 => value3
-        })
+        described_class.new(required:    required,
+                            allow_empty: allow_empty,
+                            allow_blank: allow_blank)
       end
 
       it "must output {...} containing the ruby keyword" do
         expect(subject.to_ruby).to eq(
-          "{#{keyword1}: #{value1.inspect}, #{keyword2}: #{value2.inspect}, #{keyword3}: #{value3.inspect}}"
+          "{required: #{required.inspect}, allow_empty: #{allow_empty.inspect}, allow_blank: #{allow_blank.inspect}}"
         )
       end
     end
