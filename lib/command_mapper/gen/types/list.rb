@@ -2,7 +2,7 @@ require 'command_mapper/gen/types/value'
 
 module CommandMapper
   module Gen
-    module Formats
+    module Types
       class List < Value
 
         #
