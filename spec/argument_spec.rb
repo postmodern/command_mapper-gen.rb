@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'command_mapper/gen/argument'
+require 'command_mapper/gen/types/value'
 
 describe CommandMapper::Gen::Argument do
   let(:name) { :arg1 }

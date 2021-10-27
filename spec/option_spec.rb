@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'command_mapper/gen/option'
+require 'command_mapper/gen/types/value'
 
 describe CommandMapper::Gen::Option do
   let(:flag) { '--op1' }
