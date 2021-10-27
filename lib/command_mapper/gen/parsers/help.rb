@@ -196,8 +196,11 @@ module CommandMapper
               end
 
               keywords[:value] = Types::Map.new(map, **keywords[:value])
-            elsif value_node[:name]
-              # NOTE: maybe use this in the future
+            else
+              case value_node[:name]
+              when 'NUM'
+                keywords[:value] = Types::Num.new(**keywords[:value])
+              end
             end
           end
 
