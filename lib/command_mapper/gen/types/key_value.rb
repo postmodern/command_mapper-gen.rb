@@ -11,7 +11,7 @@ module CommandMapper
         # @param [String] separator
         #   The separator character.
         #
-        def initialize(separator: ',', **kwargs)
+        def initialize(separator: '=', **kwargs)
           super(**kwargs)
 
           @separator = separator
@@ -24,7 +24,7 @@ module CommandMapper
         #
         def to_ruby
           ruby = "KeyValue.new("
-          ruby << "separator: #{separator.inspect}" unless separator == ','
+          ruby << "separator: #{separator.inspect}" unless separator == '='
 
           if (keywords = to_ruby_keywords)
             ruby << ", #{keywords}"
