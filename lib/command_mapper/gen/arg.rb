@@ -36,7 +36,9 @@ module CommandMapper
       def to_ruby
         ruby = []
         ruby << "required: #{@required.inspect}" if @required == false
-        ruby << "type: #{@type.to_ruby}"         unless @type.nil?
+        if (@type && (type = @type.to_ruby))
+          ruby << "type: #{type}"
+        end
         ruby << "repeats: #{@repeats.inspect}"   unless @repeats.nil?
         ruby.join(', ')
       end

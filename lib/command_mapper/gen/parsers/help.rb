@@ -200,9 +200,9 @@ module CommandMapper
               case value_node[:name]
               when 'NUM'
                 keywords[:value][:type] = Types::Num.new
-              else
-                keywords[:value][:type] = Types::Str.new
               end
+
+              p keywords
             end
           end
 

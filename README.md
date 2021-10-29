@@ -79,8 +79,8 @@ class Grep < CommandMapper::Command
     option "--context", equals: true, value: {type: Num.new}
     option "--group-separator", equals: true, value: true
     option "--no-group-separator"
-    option "--color", equals: :optional, value: true
-    option "--colour", equals: :optional, value: true
+    option "--color", equals: :optional, value: {required: false}
+    option "--colour", equals: :optional, value: {required: false}
     option "--binary"
 
     argument :patterns

@@ -11,12 +11,10 @@ module CommandMapper
       # @return [String]
       #
       def to_ruby
-        if @required && @type.nil? || (@type.kind_of?(Types::Str) && 
-                                       @type.allow_empty.nil? &&
-                                       @type.allow_blank.nil?)
-          "true"
-        else
-        "{#{super}}"
+        ruby = super()
+
+        if ruby.empty? then "true"
+        else                "{#{ruby}}"
         end
       end
 
