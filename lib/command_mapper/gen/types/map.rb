@@ -21,12 +21,13 @@ module CommandMapper
         # @return [String]
         #
         def to_ruby
-          ruby = "Map.new("
+          pairs = []
+
           @map.each do |value,string|
-            ruby << "#{value.inspect} => #{string.inspect}, "
+            pairs << "#{value.inspect} => #{string.inspect}"
           end
-          ruby << ")"
-          ruby
+
+          return "Map.new(#{pairs.join(', ')})"
         end
 
       end
