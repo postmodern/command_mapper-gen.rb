@@ -3,6 +3,9 @@ module CommandMapper
     module Types
       class List
 
+        # @return [String]
+        attr_reader :separator
+
         #
         # Initializes the list type.
         #
@@ -20,7 +23,7 @@ module CommandMapper
         #
         def to_ruby
           ruby = "List.new("
-          ruby << "separator: #{separator.inspect}" unless separator == ','
+          ruby << "separator: #{@separator.inspect}" unless @separator == ','
           ruby << ")"
           ruby
         end
