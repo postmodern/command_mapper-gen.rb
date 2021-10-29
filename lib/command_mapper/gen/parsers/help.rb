@@ -201,8 +201,6 @@ module CommandMapper
               when 'NUM'
                 keywords[:value][:type] = Types::Num.new
               end
-
-              p keywords
             end
           end
 
