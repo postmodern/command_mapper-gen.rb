@@ -1,9 +1,7 @@
-require 'command_mapper/gen/types/value'
-
 module CommandMapper
   module Gen
     module Types
-      class Map < Value
+      class Map
 
         # @return [Hash{Object => String}]
         attr_reader :map
@@ -13,9 +11,7 @@ module CommandMapper
         #
         # @param [Hash{Object => String}] map
         #
-        def initialize(map, **kwargs)
-          super(**kwargs)
-
+        def initialize(map)
           @map = map
         end
 
@@ -26,18 +22,10 @@ module CommandMapper
         #
         def to_ruby
           ruby = "Map.new("
-
-          ruby << "{"
           @map.each do |value,string|
             ruby << "#{value.inspect} => #{string.inspect}, "
           end
-          ruby << "}"
-
-          if (keywords = to_ruby_keywords)
-            ruby << ", #{keywords}"
-          end
-
-          ruby << ')'
+          ruby << ")"
           ruby
         end
 

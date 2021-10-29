@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'command_mapper/gen/option'
-require 'command_mapper/gen/types/value'
+require 'command_mapper/gen/types/num'
 
 describe CommandMapper::Gen::Option do
   let(:flag) { '--op1' }
@@ -25,22 +25,13 @@ describe CommandMapper::Gen::Option do
     end
 
     context "when given the value: keyword argument" do
-      context "and it's a Type::Value object" do
-        let(:value) { Types::Value.new(required: true) }
+      context "and it's a Types object" do
+        let(:value) { {type: Types::Num.new} }
 
         subject { described_class.new(flag, value: value) }
 
-        it "must set #value" do
-          expect(subject.value).to be(value)
-        end
-      end
-
-      context "and it's a Hash" do
-        subject { described_class.new(flag, value: {required: true}) }
-
-        it "must initialize #value as a Types::Value object" do
-          expect(subject.value).to be_kind_of(Types::Value)
-          expect(subject.value.required).to be(true)
+        it "must initialize #value as an OptionValue object" do
+          expect(subject.value).to be_kind_of(OptionValue)
         end
       end
     end
@@ -81,13 +72,13 @@ describe CommandMapper::Gen::Option do
       end
     end
 
-    context "when #value is not nil" do
-      let(:value) { Types::Value.new(required: true) }
+    context "when #type is not nil" do
+      let(:value) { {required: true} }
 
       subject { described_class.new(flag, value: value) }
 
       it "must append 'value: ...' and call the #value's #to_ruby method" do
-        expect(subject.to_ruby).to eq("option #{flag.inspect}, value: #{value.to_ruby}")
+        expect(subject.to_ruby).to eq("option #{flag.inspect}, value: #{subject.value.to_ruby}")
       end
     end
   end

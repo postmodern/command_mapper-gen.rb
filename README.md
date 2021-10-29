@@ -38,8 +38,8 @@ class Grep < CommandMapper::Command
     option "--fixed-strings"
     option "--basic-regexp"
     option "--perl-regexp"
-    option "--regexp", equals: true, value: :required
-    option "--file", equals: true, value: :required
+    option "--regexp", equals: true, value: true
+    option "--file", equals: true, value: true
     option "--ignore-case"
     option "--no-ignore-case"
     option "--word-regexp"
@@ -49,42 +49,42 @@ class Grep < CommandMapper::Command
     option "--invert-match"
     option "--version"
     option "--help"
-    option "--max-count", equals: true, value: :required
+    option "--max-count", equals: true, value: {type: Num.new}
     option "--byte-offset"
     option "--line-number"
     option "--line-buffered"
     option "--with-filename"
     option "--no-filename"
-    option "--label", equals: true, value: :required
+    option "--label", equals: true, value: true
     option "--only-matching"
     option "--quiet"
-    option "--binary-files", equals: true, value: :required
+    option "--binary-files", equals: true, value: true
     option "--text"
     option "-I", name: 	# FIXME: name
-    option "--directories", equals: true, value: :required
-    option "--devices", equals: true, value: :required
+    option "--directories", equals: true, value: true
+    option "--devices", equals: true, value: true
     option "--recursive"
     option "--dereference-recursive"
-    option "--include", equals: true, value: :required
-    option "--exclude", equals: true, value: :required
-    option "--exclude-from", equals: true, value: :required
-    option "--exclude-dir", equals: true, value: :required
-    option "--files-without-match", value: :required
+    option "--include", equals: true, value: true
+    option "--exclude", equals: true, value: true
+    option "--exclude-from", equals: true, value: true
+    option "--exclude-dir", equals: true, value: true
+    option "--files-without-match", value: true
     option "--files-with-matches"
     option "--count"
     option "--initial-tab"
     option "--null"
-    option "--before-context", equals: true, value: :required
-    option "--after-context", equals: true, value: :required
-    option "--context", equals: true, value: :required
-    option "--group-separator", equals: true, value: :required
+    option "--before-context", equals: true, value: {type: Num.new}
+    option "--after-context", equals: true, value: {type: Num.new}
+    option "--context", equals: true, value: {type: Num.new}
+    option "--group-separator", equals: true, value: true
     option "--no-group-separator"
-    option "--color", equals: :optional, value: :optional
-    option "--colour", equals: :optional, value: :optional
+    option "--color", equals: :optional, value: true
+    option "--colour", equals: :optional, value: true
     option "--binary"
 
-    argument :patterns, value: :required
-    argument :file, value: :optional
+    argument :patterns
+    argument :file, required: false
   end
 
 end

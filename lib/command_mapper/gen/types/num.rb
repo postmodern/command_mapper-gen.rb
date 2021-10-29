@@ -1,9 +1,7 @@
-require 'command_mapper/gen/types/value'
-
 module CommandMapper
   module Gen
     module Types
-      class Num < Value
+      class Num
 
         #
         # Converts the num type to Ruby source code.
@@ -11,13 +9,7 @@ module CommandMapper
         # @return [String]
         #
         def to_ruby
-          ruby = "Num.new"
-
-          if (keywords = to_ruby_keywords)
-            ruby << "(#{keywords})"
-          end
-
-          ruby
+          "Num.new"
         end
 
       end

@@ -1,4 +1,4 @@
-require 'command_mapper/gen/types/value'
+require 'command_mapper/gen/types/str'
 require 'command_mapper/gen/types/num'
 require 'command_mapper/gen/types/list'
 require 'command_mapper/gen/types/key_value'

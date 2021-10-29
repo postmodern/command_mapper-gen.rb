@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'command_mapper/gen/argument'
-require 'command_mapper/gen/types/value'
+require 'command_mapper/gen/types/str'
+require 'command_mapper/gen/types/num'
 
 describe CommandMapper::Gen::Argument do
   let(:name) { :arg1 }
@@ -12,8 +13,8 @@ describe CommandMapper::Gen::Argument do
       expect(subject.name).to eq(name)
     end
 
-    it "must default #value to nil" do
-      expect(subject.value).to be(nil)
+    it "must default #type to nil" do
+      expect(subject.type).to be(nil)
     end
 
     it "must default #repeats to nil" do
@@ -21,22 +22,13 @@ describe CommandMapper::Gen::Argument do
     end
 
     context "when given the value: keyword argument" do
-      context "and it's a Type::Value object" do
-        let(:value) { Types::Value.new(required: true) }
+      context "and it's a Types object" do
+        let(:type) { Types::Num.new }
 
-        subject { described_class.new(name, value: value) }
+        subject { described_class.new(name, type: type) }
 
-        it "must set #value" do
-          expect(subject.value).to be(value)
-        end
-      end
-
-      context "and it's a Hash" do
-        subject { described_class.new(name, value: {required: true}) }
-
-        it "must initialize #value as a Types::Value object" do
-          expect(subject.value).to be_kind_of(Types::Value)
-          expect(subject.value.required).to be(true)
+        it "must set #type" do
+          expect(subject.type).to be(type)
         end
       end
     end
@@ -57,13 +49,33 @@ describe CommandMapper::Gen::Argument do
       expect(subject.to_ruby).to eq("argument #{name.inspect}")
     end
 
-    context "when #value is not nil" do
-      let(:value) { Types::Value.new(required: true) }
+    context "when #required is true" do
+      let(:required) { true}
 
-      subject { described_class.new(name, value: value) }
+      subject { described_class.new(name, required: required) }
 
-      it "must append 'value: ...' and call the #value's #to_ruby method" do
-        expect(subject.to_ruby).to eq("argument #{name.inspect}, value: #{value.to_ruby}")
+      it "must not append 'required: true'" do
+        expect(subject.to_ruby).to eq("argument #{name.inspect}")
+      end
+    end
+
+    context "when #required is false" do
+      let(:required) { false }
+
+      subject { described_class.new(name, required: required) }
+
+      it "must append 'required: false'" do
+        expect(subject.to_ruby).to eq("argument #{name.inspect}, required: #{required.inspect}")
+      end
+    end
+
+    context "when #type is not nil" do
+      let(:type) { Types::Num.new }
+
+      subject { described_class.new(name, type: type) }
+
+      it "must append 'type: ...' and call the #type's #to_ruby method" do
+        expect(subject.to_ruby).to eq("argument #{name.inspect}, type: #{type.to_ruby}")
       end
     end
 

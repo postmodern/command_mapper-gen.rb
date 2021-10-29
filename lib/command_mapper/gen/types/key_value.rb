@@ -1,9 +1,7 @@
-require 'command_mapper/gen/types/value'
-
 module CommandMapper
   module Gen
     module Types
-      class KeyValue < Value
+      class KeyValue
 
         #
         # Initializes the key-value type.
@@ -11,9 +9,7 @@ module CommandMapper
         # @param [String] separator
         #   The separator character.
         #
-        def initialize(separator: '=', **kwargs)
-          super(**kwargs)
-
+        def initialize(separator: '=')
           @separator = separator
         end
 
@@ -25,11 +21,6 @@ module CommandMapper
         def to_ruby
           ruby = "KeyValue.new("
           ruby << "separator: #{separator.inspect}" unless separator == '='
-
-          if (keywords = to_ruby_keywords)
-            ruby << ", #{keywords}"
-          end
-
           ruby << ")"
           ruby
         end

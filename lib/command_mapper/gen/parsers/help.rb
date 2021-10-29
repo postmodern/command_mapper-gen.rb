@@ -98,10 +98,10 @@ module CommandMapper
 
               if node[:optional]
                 argument = node[:optional][:argument]
-                keywords[:value] = {required: false}
+                keywords[:required] = false
               else
                 argument = node[:argument]
-                keywords[:value] = {required: true}
+                keywords[:required] = true
               end
 
               if argument
@@ -159,14 +159,14 @@ module CommandMapper
             if value_node[:list]
               separator = value_node[:list][:separator]
 
-              keywords[:value] = Types::List.new(
-                separator: separator.to_s, **keywords[:value]
+              keywords[:value][:type] = Types::List.new(
+                separator: separator.to_s
               )
             elsif value_node[:key_value]
               separator = value_node[:key_value][:separator]
 
-              keywords[:value] = Types::KeyValue.new(
-                separator: separator.to_s, **keywords[:value]
+              keywords[:value][:type] = Types::KeyValue.new(
+                separator: separator.to_s
               )
             elsif value_node[:literal_values]
               map = {}
@@ -195,11 +195,13 @@ module CommandMapper
                 map = {true => 'enabled', false => 'disabled'}
               end
 
-              keywords[:value] = Types::Map.new(map, **keywords[:value])
-            else
+              keywords[:value][:type] = Types::Map.new(map)
+            elsif value_node[:name]
               case value_node[:name]
               when 'NUM'
-                keywords[:value] = Types::Num.new(**keywords[:value])
+                keywords[:value][:type] = Types::Num.new
+              else
+                keywords[:value][:type] = Types::Str.new
               end
             end
           end
