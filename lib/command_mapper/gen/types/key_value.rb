@@ -3,6 +3,9 @@ module CommandMapper
     module Types
       class KeyValue
 
+        # @return [String]
+        attr_reader :separator
+
         #
         # Initializes the key-value type.
         #
@@ -20,7 +23,7 @@ module CommandMapper
         #
         def to_ruby
           ruby = "KeyValue.new("
-          ruby << "separator: #{separator.inspect}" unless separator == '='
+          ruby << "separator: #{@separator.inspect}" unless @separator == '='
           ruby << ")"
           ruby
         end
