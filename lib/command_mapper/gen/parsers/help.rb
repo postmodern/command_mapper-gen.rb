@@ -92,7 +92,7 @@ module CommandMapper
           nodes.each do |node|
             if (command_name = node[:command_name])
               # optionally set the program name, if it already hasn't been given
-              @command.command_name ||= command_name
+              @command.command_name ||= command_name.to_s
             else
               keywords = {}
 
