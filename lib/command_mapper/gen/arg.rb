@@ -10,9 +10,6 @@ module CommandMapper
       # @return [Types::Type, nil]
       attr_reader :type
 
-      # @return [Boolean, nil]
-      attr_reader :repeats
-
       #
       # Initializes the parsed argument.
       #
@@ -22,10 +19,9 @@ module CommandMapper
       #
       # @param [Boolean, nil] repeats
       #
-      def initialize(required: nil, type: nil, repeats: nil)
+      def initialize(required: nil, type: nil)
         @required = required
         @type     = type
-        @repeats  = repeats
       end
 
       #
@@ -36,10 +32,11 @@ module CommandMapper
       def to_ruby
         ruby = []
         ruby << "required: #{@required.inspect}" if @required == false
+
         if (@type && (type = @type.to_ruby))
           ruby << "type: #{type}"
         end
-        ruby << "repeats: #{@repeats.inspect}"   unless @repeats.nil?
+
         ruby.join(', ')
       end
 

@@ -12,6 +12,9 @@ module CommandMapper
       # @return [Symbol]
       attr_reader :name
 
+      # @return [Boolean, nil]
+      attr_reader :repeats
+
       #
       # Initializes the parsed argument.
       #
@@ -23,10 +26,11 @@ module CommandMapper
       # @param [Hash{Symbol => Object}] kwargs
       #   Additional keyword arguments.
       #
-      def initialize(name, **kwargs)
+      def initialize(name, repeats: nil, **kwargs)
         super(**kwargs)
 
-        @name = name
+        @name    = name
+        @repeats = repeats
       end
 
       #
@@ -35,10 +39,12 @@ module CommandMapper
       # @return [String]
       #
       def to_ruby
-        keywords = super()
-
         ruby = "argument #{@name.inspect}"
+
+        keywords = super()
         ruby << ", #{keywords}" unless keywords.empty?
+
+        ruby << ", repeats: #{@repeats.inspect}" unless @repeats.nil?
         ruby
       end
 
