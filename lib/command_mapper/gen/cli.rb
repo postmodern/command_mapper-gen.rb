@@ -80,7 +80,7 @@ module CommandMapper
 
         if argv.empty?
           print_error "expects a COMMAND_NAME or -"
-          exit -1
+          return -1
         end
 
         if argv.first == '-'
