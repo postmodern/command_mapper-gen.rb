@@ -75,6 +75,37 @@ module CommandMapper
         end
 
         #
+        # Parses an individual argument node.
+        #
+        # @param [Hash] node
+        #   An argument node.
+        #
+        def parse_argument(node)
+          keywords = {}
+
+          if node[:optional]
+            argument = node[:optional][:argument]
+            keywords[:required] = false
+          else
+            argument = node[:argument]
+            keywords[:required] = true
+          end
+
+          if argument
+            if node[:repeats] || argument[:repeats]
+              keywords[:repeats] = true
+            end
+
+            name = argument[:name].to_s.downcase.to_sym
+
+            # ignore [OPTIONS] or [opts]
+            unless (name == :option || name == :options || name == :opts)
+              @command.argument(name,**keywords)
+            end
+          end
+        end
+
+        #
         # Parses a `usage: ...` string into {#command}.
         #
         # @param [String] usage
@@ -82,41 +113,23 @@ module CommandMapper
         def parse_usage(usage)
           parser = Usage.new
 
-          nodes = begin
-                    parser.parse(usage)
-                   rescue Parslet::ParseFailed => error
-                     print_parser_error(usage,error)
-                     return
-                   end
+          tree = begin
+                   parser.parse(usage)
+                 rescue Parslet::ParseFailed => error
+                   print_parser_error(usage,error)
+                   return
+                 end
 
-          nodes.each do |node|
-            if (command_name = node[:command_name])
-              # optionally set the program name, if it already hasn't been given
-              @command.command_name ||= command_name.to_s
-            else
-              keywords = {}
+          if (command_name = tree[:command_name])
+            # optionally set the program name, if it already hasn't been given
+            @command.command_name ||= command_name.to_s
+          end
 
-              if node[:optional]
-                argument = node[:optional][:argument]
-                keywords[:required] = false
-              else
-                argument = node[:argument]
-                keywords[:required] = true
-              end
-
-              if argument
-                if node[:repeats] || argument[:repeats]
-                  keywords[:repeats] = true
-                end
-
-                name = argument[:name].to_s.downcase.to_sym
-
-                # ignore [OPTIONS] or [opts]
-                unless (name == :option || name == :options || name == :opts)
-                  @command.argument(name,**keywords)
-                end
-              end
-            end
+          case tree[:arguments]
+          when Array
+            tree[:arguments].each(&method(:parse_argument))
+          when Hash
+            parse_argument(tree[:arguments])
           end
         end
 

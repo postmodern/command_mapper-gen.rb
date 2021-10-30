@@ -1073,7 +1073,7 @@ describe CommandMapper::Gen::Parsers::Usage do
       let(:string) { 'foo' }
 
       it "must capture the command name" do
-        expect(subject.parse(string)).to eq({command_name: string})
+        expect(subject.parse(string)).to eq(string)
       end
     end
 
@@ -1081,7 +1081,7 @@ describe CommandMapper::Gen::Parsers::Usage do
       let(:string) { 'Foo' }
 
       it "must capture the command name" do
-        expect(subject.parse(string)).to eq({command_name: string})
+        expect(subject.parse(string)).to eq(string)
       end
     end
 
@@ -1089,7 +1089,7 @@ describe CommandMapper::Gen::Parsers::Usage do
       let(:string) { 'foo_bar' }
 
       it "must capture the command name" do
-        expect(subject.parse(string)).to eq({command_name: string})
+        expect(subject.parse(string)).to eq(string)
       end
     end
 
@@ -1097,7 +1097,7 @@ describe CommandMapper::Gen::Parsers::Usage do
       let(:string) { 'foo-bar' }
 
       it "must capture the command name" do
-        expect(subject.parse(string)).to eq({command_name: string})
+        expect(subject.parse(string)).to eq(string)
       end
     end
   end
@@ -1115,20 +1115,36 @@ describe CommandMapper::Gen::Parsers::Usage do
       end
     end
 
+    context "when given a command name and a single argument" do
+      let(:arg1)   { "ARG1" }
+      let(:string) { "#{command_name} #{arg1}" }
+
+      it "must capture the command name and argument" do
+        expect(subject.parse(string)).to eq(
+          {
+            command_name: command_name,
+            arguments: {argument: {name: arg1}}
+          }
+        )
+      end
+    end
+
     context "when given a command name and arguments" do
       let(:arg1)   { "ARG1" }
       let(:arg2)   { "ARG2" }
       let(:arg3)   { "ARG3" }
       let(:string) { "#{command_name} #{arg1} #{arg2} #{arg3}" }
 
-      it "must capture the command name" do
+      it "must capture the command name and arguments" do
         expect(subject.parse(string)).to eq(
-          [
-            {command_name: command_name},
-            {argument: {name: arg1}},
-            {argument: {name: arg2}},
-            {argument: {name: arg3}}
-          ]
+          {
+            command_name: command_name,
+            arguments: [
+              {argument: {name: arg1}},
+              {argument: {name: arg2}},
+              {argument: {name: arg3}}
+            ]
+          }
         )
       end
     end

@@ -114,11 +114,11 @@ module CommandMapper
         rule(:args) { arg >> ( arg_separator >> arg).repeat(0) }
 
         rule(:command_name) do
-          (match['a-zA-Z'] >> match['a-zA-Z0-9_-'].repeat(0)).as(:command_name)
+          (match['a-zA-Z'] >> match['a-zA-Z0-9_-'].repeat(0))
         end
 
         rule(:usage) do
-          command_name >> (space >> args).maybe
+          command_name.as(:command_name) >> (space >> args.as(:arguments)).maybe
         end
 
         root :usage
