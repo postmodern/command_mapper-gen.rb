@@ -20,6 +20,30 @@ describe CommandMapper::Gen::CLI do
     end
   end
 
+  describe ".run" do
+    subject { described_class }
+
+    context "when Interrupt is raised" do
+      before do
+        expect_any_instance_of(described_class).to receive(:run).and_raise(Interrupt)
+      end
+
+      it "must exit with 130" do
+        expect(subject.run([])).to eq(130)
+      end
+    end
+
+    context "when Errno::EPIPE is raised" do
+      before do
+        expect_any_instance_of(described_class).to receive(:run).and_raise(Errno::EPIPE)
+      end
+
+      it "must exit with 0" do
+        expect(subject.run([])).to eq(0)
+      end
+    end
+  end
+
   describe "#run" do
     let(:command_name) { 'yes' }
 
