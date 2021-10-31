@@ -59,6 +59,12 @@ module CommandMapper
       #
       def self.run(argv=ARGV)
         new().run(argv)
+      rescue Interrupt
+        # https://tldp.org/LDP/abs/html/exitcodes.html
+        return 130
+      rescue Errno::EPIPE
+        # STDOUT pipe broken
+        return 0
       end
 
       #
