@@ -7,7 +7,7 @@ module CommandMapper
 
         def self.run(command)
           output = begin
-                     `man #{command.command_name} 2>/dev/null`
+                     `man #{command.man_page} 2>/dev/null`
                    rescue Errno::ENOENT
                    end
 

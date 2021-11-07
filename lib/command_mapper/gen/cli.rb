@@ -91,14 +91,18 @@ module CommandMapper
 
         if argv.first == '-'
           @command = Command.new
-          parser   = Parsers::Help.new(command)
+          parser   = Parsers::Help.new(@command)
 
           parser.parse($stdin.read)
         else
           @command = Command.new(argv.first)
 
           @parsers.each do |parser|
-            parser.run(command)
+            parser.run(@command)
+
+            @command.subcommands.each_value do |subcommand|
+              parser.run(subcommand)
+            end
           end
         end
 
@@ -124,7 +128,7 @@ module CommandMapper
       #
       def option_parser
         OptionParser.new do |opts|
-          opts.banner = "usage: #{PROGRAM_NAME} [options] [COMMAND_NAME|-]"
+          opts.banner = "usage: #{PROGRAM_NAME} [options] {COMMAND_NAME|-}"
 
           opts.separator ""
           opts.separator "Options:"

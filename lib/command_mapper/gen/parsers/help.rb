@@ -7,11 +7,13 @@ module CommandMapper
     module Parsers
       class Help
 
-        # @return [CommandMapper::Gen::Command]
+        # @return [Command]
         attr_reader :command
 
         #
         # Initializes the `--help` output parser.
+        #
+        # @param [Command] command
         #
         def initialize(command)
           @command = command
@@ -29,7 +31,7 @@ module CommandMapper
         # @return [Command]
         #   The parsed command.
         #
-        def self.parse(command,output)
+        def self.parse(output,command)
           parser = new(command)
           parser.parse(output)
 
@@ -46,12 +48,21 @@ module CommandMapper
         #   Returns `nil` if the command could not be found.
         #
         def self.run(command)
-          output = begin
-                     `#{command.command_name} --help 2>&1`
-                   rescue Errno::ENOENT
-                   end
+          output = nil
 
-          parse(command,output) unless (output.nil? || output.empty?)
+          begin
+            output = `#{command.command_string} --help 2>&1`
+          rescue Errno::ENOENT
+            # command not found
+            return
+          end
+
+          if output.empty?
+            # --help not supported, fallback to trying -h
+            output = `#{command.command_string} -h 2>&1`
+          end
+
+          parse(output,command) unless output.empty?
         end
 
         #
@@ -64,7 +75,7 @@ module CommandMapper
         #   The parsing error.
         #
         def print_parser_error(line,error)
-          warn "failed to parse line:"
+          warn "Failed to parse line:"
           warn ""
           warn "  #{line}"
 
@@ -224,9 +235,25 @@ module CommandMapper
           end
         end
 
-        USAGE = /^usage:\s/i
+        USAGE = /^usage:\s+/i
 
-        OPTION_LINE = /^\s+-/
+        USAGE_LINE = /#{USAGE}[a-z][a-z0-9_-]*/i
+
+        OPTION_LINE = /^\s+-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
+
+        SUBCOMMAND_LINE = /^\s+([a-z][a-z0-9_-]+)(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
+
+        def parse_subcommand(line)
+          previously_seen_command_names = @command.command_string.split
+
+          if (match = line.match(SUBCOMMAND_LINE))
+            subcommand_name = match[1]
+
+            unless previously_seen_command_names.include?(subcommand_name)
+              @command.subcommand(subcommand_name)
+            end
+          end
+        end
 
         #
         # Parses `--help` output into {#command}.
@@ -236,10 +263,12 @@ module CommandMapper
         #
         def parse(output)
           output.each_line do |line|
-            if line =~ USAGE
+            if line =~ USAGE_LINE
               parse_usage(line.sub(USAGE,'').chomp)
             elsif line =~ OPTION_LINE
               parse_option_line(line.chomp)
+            elsif line =~ SUBCOMMAND_LINE
+              parse_subcommand(line.chomp)
             end
           end
         end
