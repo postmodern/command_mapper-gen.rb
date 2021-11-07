@@ -14,7 +14,8 @@ module CommandMapper
 
         rule(:argument_name) do
           (
-            (lowercase_name | uppercase_name).as(:name) >> ellipsis?
+            (uppercase_name | capitalized_name | lowercase_name).as(:name) >>
+            ellipsis?
           ).as(:argument)
         end
 
@@ -113,12 +114,13 @@ module CommandMapper
         end
         rule(:args) { arg >> ( arg_separator >> arg).repeat(0) }
 
-        rule(:command_name) do
-          (match['a-zA-Z'] >> match['a-zA-Z0-9_-'].repeat(0))
-        end
+        rule(:subcommand_name) { match['a-z'] >> match['a-z0-9_-'].repeat(0) }
+        rule(:command_name) { match['a-zA-Z'] >> match['a-z0-9_-'].repeat(0) }
 
         rule(:usage) do
-          command_name.as(:command_name) >> (space >> args.as(:arguments)).maybe
+          command_name.as(:command_name) >>
+          (space >> subcommand_name.as(:subcommand_name)).maybe >>
+          (space >> args.as(:arguments)).maybe
         end
 
         root :usage

@@ -1115,6 +1115,21 @@ describe CommandMapper::Gen::Parsers::Usage do
       end
     end
 
+    context "when given a command name and a sub-command name" do
+      let(:subcommand_name) { "bar" }
+
+      let(:string) { "#{command_name} #{subcommand_name}" }
+
+      it "must capture both the command name and sub-command name" do
+        expect(subject.parse(string)).to eq(
+          {
+            command_name:    command_name,
+            subcommand_name: subcommand_name
+          }
+        )
+      end
+    end
+
     context "when given a command name and a single argument" do
       let(:arg1)   { "ARG1" }
       let(:string) { "#{command_name} #{arg1}" }
