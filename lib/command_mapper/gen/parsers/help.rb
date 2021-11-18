@@ -241,9 +241,9 @@ module CommandMapper
 
         OPTION_LINE = /^\s+-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
 
-        SUBCOMMAND_LINE = /^\s+([a-z][a-z0-9_-]+)(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
+        SUBCOMMAND_LINE = /^\s{2,}([a-z][a-z0-9_-]+)(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
 
-        def parse_subcommand(line)
+        def parse_subcommand_line(line)
           previously_seen_command_names = @command.command_string.split
 
           if (match = line.match(SUBCOMMAND_LINE))
@@ -268,7 +268,7 @@ module CommandMapper
             elsif line =~ OPTION_LINE
               parse_option_line(line.chomp)
             elsif line =~ SUBCOMMAND_LINE
-              parse_subcommand(line.chomp)
+              parse_subcommand_line(line.chomp)
             end
           end
         end
