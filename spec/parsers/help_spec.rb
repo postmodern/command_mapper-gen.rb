@@ -143,6 +143,110 @@ describe CommandMapper::Gen::Parsers::Help do
           expect(command.options[long_flag].equals).to be(true)
         end
       end
+
+      context "and when the value contains literal values" do
+        let(:value1) { :foo }
+        let(:value2) { :bar }
+        let(:value3) { :baz }
+        let(:line) { "      #{long_flag}=[#{value1}|#{value2}|#{value3}]    Bla bla bla" }
+
+        let(:values) { [value1, value2, value3] }
+
+        before { subject.parse_option_line(line) }
+
+        it "must set Option#value's #type to an Enum of the values" do
+          expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Enum)
+          expect(command.options[long_flag].value.type.values).to eq(values)
+        end
+
+        context "when the literal values are 'YES' and 'NO'" do
+          let(:line) { "      #{long_flag}=[YES|NO]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'YES', false=>'NO'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'YES', false => 'NO'}
+            )
+          end
+        end
+
+        context "when the literal values are 'Yes' and 'No'" do
+          let(:line) { "      #{long_flag}=[Yes|No]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'Yes', false=>'No'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'Yes', false => 'No'}
+            )
+          end
+        end
+
+        context "when the literal values are 'yes' and 'no'" do
+          let(:line) { "      #{long_flag}=[yes|no]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'yes', false=>'no'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'yes', false => 'no'}
+            )
+          end
+        end
+
+        context "when the literal values are 'Y' and 'N'" do
+          let(:line) { "      #{long_flag}=[Y|N]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'Y', false=>'N'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'Y', false => 'N'}
+            )
+          end
+        end
+
+        context "when the literal values are 'y' and 'n'" do
+          let(:line) { "      #{long_flag}=[y|n]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'y', false=>'n'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'y', false => 'n'}
+            )
+          end
+        end
+
+        context "when the literal values are 'ENABLED' and 'DISABLED'" do
+          let(:line) { "      #{long_flag}=[ENABLED|DISABLED]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'ENABLED', false=>'DISABLED'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'ENABLED', false => 'DISABLED'}
+            )
+          end
+        end
+
+        context "when the literal values are 'Enabled' and 'Disabled'" do
+          let(:line) { "      #{long_flag}=[Enabled|Disabled]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'Enabled', false=>'Disabled'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'Enabled', false => 'Disabled'}
+            )
+          end
+        end
+
+        context "when the literal values are 'enabled' and 'disabled'" do
+          let(:line) { "      #{long_flag}=[enabled|disabled]    Bla bla bla" }
+
+          it "must set Option#value's #type to a Map of {true=>'enabled', false=>'disabled'}" do
+            expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Map)
+            expect(command.options[long_flag].value.type.map).to eq(
+              {true => 'enabled', false => 'disabled'}
+            )
+          end
+        end
+      end
     end
 
     context "when the option line cannot be parsed" do
