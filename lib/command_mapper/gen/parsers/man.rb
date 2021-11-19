@@ -1,4 +1,5 @@
 require 'command_mapper/gen/parsers/help'
+require 'command_mapper/gen/exceptions'
 
 module CommandMapper
   module Gen
@@ -14,10 +15,14 @@ module CommandMapper
         # @return [Command, nil]
         #   Returns `nil` if the command could not be found.
         #
+        # @raise [CommandNotInstalled]
+        #   The `man` command was not installed.
+        #
         def self.run(command)
           output = begin
                      `man #{command.man_page} 2>/dev/null`
                    rescue Errno::ENOENT
+                     raise(CommandNotInstalled,"the 'man' command is not installed")
                    end
 
           parse(output,command) unless (output.nil? || output.empty?)

@@ -82,8 +82,10 @@ MAN_PAGE
         allow(subject).to receive(:`).with("man #{command_name} 2>/dev/null").and_raise(Errno::ENOENT.new("man"))
       end
 
-      it "must return nil" do
-        expect(subject.run(command)).to be(nil)
+      it do
+        expect {
+          subject.run(command)
+        }.to raise_error(CommandMapper::Gen::CommandNotInstalled,"the 'man' command is not installed")
       end
     end
   end
