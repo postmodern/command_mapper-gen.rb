@@ -144,6 +144,16 @@ describe CommandMapper::Gen::Parsers::Help do
         end
       end
 
+      context "when the option value is named NUM" do
+        let(:line) { "      #{long_flag} NUM    Bla bla bla" }
+
+        before { subject.parse_option_line(line) }
+
+        it "must set Option#value's type to a Num" do
+          expect(command.options[long_flag].value.type).to be_kind_of(CommandMapper::Gen::Types::Num)
+        end
+      end
+
       context "and when the value contains literal values" do
         let(:value1) { :foo }
         let(:value2) { :bar }
