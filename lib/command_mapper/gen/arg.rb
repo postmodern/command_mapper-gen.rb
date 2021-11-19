@@ -17,8 +17,6 @@ module CommandMapper
       #
       # @param [Types::Type, nil] type
       #
-      # @param [Boolean, nil] repeats
-      #
       def initialize(required: nil, type: nil)
         @required = required
         @type     = type
