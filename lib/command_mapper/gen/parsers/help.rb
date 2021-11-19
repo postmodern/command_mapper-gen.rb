@@ -243,7 +243,7 @@ module CommandMapper
 
         OPTION_LINE = /^\s+-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
 
-        SUBCOMMAND = /[a-z][a-z0-9_-]+/
+        SUBCOMMAND = /[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*/
 
         SUBCOMMAND_LINE = /^\s{2,}(#{SUBCOMMAND})(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
 
