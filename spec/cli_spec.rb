@@ -121,6 +121,16 @@ describe CommandMapper::Gen::CLI do
       end
     end
 
+    context "when the command's --help and -h output are empty" do
+      let(:argv) { %w[true] }
+
+      it "must print an error message and return -2" do
+        expect {
+          expect(subject.run(argv)).to eq(-2)
+        }.to output("#{described_class::PROGRAM_NAME}: no options or arguments detected#{$/}").to_stderr
+      end
+    end
+
     context "when no arguments are given" do
       let(:argv) { [] }
 
