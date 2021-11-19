@@ -165,11 +165,19 @@ module CommandMapper
         end
 
         unless @subcommands.empty?
-          @subcommands.each_value do |subcommand|
+          if (!@options.empty? || !@arguments.empty?)
             lines << ''
+          end
+
+          @subcommands.each_value.each_with_index do |subcommand,index|
+            lines << '' if index > 0
 
             subcommand.to_ruby.each_line do |line|
-              lines << "#{indent}#{line.chomp}"
+              if line == $/
+                lines << ''
+              else
+                lines << "#{indent}#{line.chomp}"
+              end
             end
           end
         end
