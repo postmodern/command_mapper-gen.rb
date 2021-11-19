@@ -64,7 +64,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given an empty string" do
       let(:string) { '' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -104,7 +104,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given an empty string" do
       let(:string) { '' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -172,7 +172,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given one uppercase character and a lowercase character" do
       let(:string) { 'Ab' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -180,7 +180,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given one uppercase character followed by multiple lowercase characters" do
       let(:string) { 'Abbbb' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
 
@@ -424,7 +424,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given one uppercase character" do
       let(:string) { 'A' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -432,14 +432,14 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given multiple uppercase characters" do
       let(:string) { 'AB' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
 
       context "and it contains a '_' character" do
         let(:string) { 'ABB_BB' }
 
-        it "must not parse it" do
+        it "must parse it" do
           expect(subject.parse(string)).to eq(string)
         end
       end
@@ -455,7 +455,7 @@ describe CommandMapper::Gen::Parsers::Common do
       context "and it contains a '-' character" do
         let(:string) { 'ABB-BB' }
 
-        it "must not parse it" do
+        it "must parse it" do
           expect(subject.parse(string)).to eq(string)
         end
       end
@@ -500,7 +500,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given a '-' and a lowercase alphabetic character" do
       let(:string) { '-a' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -508,7 +508,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given a '-' and a uppercase alphabetic character" do
       let(:string) { '-A' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -516,7 +516,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given a '-' and a numeric character" do
       let(:string) { '-0' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -524,7 +524,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given a '-' and a '#' character" do
       let(:string) { '-#' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -560,7 +560,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given a '--' and a lowercase alphabetic character" do
       let(:string) { '--a' }
 
-      it "must parse it" do
+      it "must not parse it" do
         expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
       end
     end
@@ -568,7 +568,7 @@ describe CommandMapper::Gen::Parsers::Common do
     context "when given a '--' and a uppercase alphabetic character" do
       let(:string) { '--A' }
 
-      it "must parse it" do
+      it "must not parse it" do
         expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
       end
     end

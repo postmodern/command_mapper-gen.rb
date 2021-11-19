@@ -34,7 +34,7 @@ describe CommandMapper::Gen::Parsers::Options do
         context "and it contains a digit" do
           let(:string) { 'FOO1' }
 
-          it "must not parse it" do
+          it "must parse it" do
             expect(subject.parse(string)).to eq(string)
           end
         end
@@ -60,7 +60,7 @@ describe CommandMapper::Gen::Parsers::Options do
         context "but it contains a '-'" do
           let(:string) { 'FOO-BAR' }
 
-          it "must not parse it" do
+          it "must parse it" do
             expect(subject.parse(string)).to eq(string)
           end
         end
@@ -96,7 +96,7 @@ describe CommandMapper::Gen::Parsers::Options do
         context "and it contains a digit" do
           let(:string) { 'foo1' }
 
-          it "must not parse it" do
+          it "must parse it" do
             expect(subject.parse(string)).to eq(string)
           end
         end
@@ -122,7 +122,7 @@ describe CommandMapper::Gen::Parsers::Options do
         context "and it contains a '-'" do
           let(:string) { 'foo-bar' }
 
-          it "must not parse it" do
+          it "must parse it" do
             expect(subject.parse(string)).to eq(string)
           end
         end
@@ -150,7 +150,7 @@ describe CommandMapper::Gen::Parsers::Options do
         context "and it contains a digit" do
           let(:string) { 'Foo1' }
 
-          it "must not parse it" do
+          it "must parse it" do
             expect(subject.parse(string)).to eq(string)
           end
         end
@@ -176,7 +176,7 @@ describe CommandMapper::Gen::Parsers::Options do
         context "and it contains a '-'" do
           let(:string) { 'Foo-bar' }
 
-          it "must not parse it" do
+          it "must parse it" do
             expect(subject.parse(string)).to eq(string)
           end
         end

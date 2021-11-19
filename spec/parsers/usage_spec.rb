@@ -32,7 +32,7 @@ describe CommandMapper::Gen::Parsers::Usage do
     context "when given one uppercase character and a lowercase character" do
       let(:string) { 'Ab' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -40,7 +40,7 @@ describe CommandMapper::Gen::Parsers::Usage do
     context "when given one uppercase character followed by multiple lowercase characters" do
       let(:string) { 'Abbbb' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
 
@@ -84,7 +84,7 @@ describe CommandMapper::Gen::Parsers::Usage do
     context "when given one lowercase character" do
       let(:string) { 'a' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
     end
@@ -92,7 +92,7 @@ describe CommandMapper::Gen::Parsers::Usage do
     context "when given multiple lowercase characters" do
       let(:string) { 'ab' }
 
-      it "must not parse it" do
+      it "must parse it" do
         expect(subject.parse(string)).to eq(string)
       end
  
