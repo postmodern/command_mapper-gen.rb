@@ -9,7 +9,10 @@ module CommandMapper
 
         rule(:literal_values) do
           (
-            name.as(:string) >> (str('|') >> name.as(:string)).repeat(1)
+            name.as(:string) >> (
+              (str('|') >> name.as(:string)).repeat(1) |
+              (str(',') >> name.as(:string)).repeat(1)
+            )
           ).as(:literal_values)
         end
 

@@ -230,6 +230,42 @@ describe CommandMapper::Gen::Parsers::Options do
         )
       end
     end
+
+    context "when given 'foo,bar'" do
+      let(:literal1) { "foo" }
+      let(:literal2) { "bar" }
+      let(:string)   { "#{literal1},#{literal2}" }
+
+      it "must parse both literal string values" do
+        expect(subject.parse(string)).to eq(
+          {
+            literal_values: [
+              {string: literal1},
+              {string: literal2}
+            ]
+          }
+        )
+      end
+    end
+
+    context "when given 'foo,bar,baz'" do
+      let(:literal1) { "foo" }
+      let(:literal2) { "bar" }
+      let(:literal3) { "baz" }
+      let(:string)   { "#{literal1},#{literal2},#{literal3}" }
+
+      it "must parse both literal string values" do
+        expect(subject.parse(string)).to eq(
+          {
+            literal_values: [
+              {string: literal1},
+              {string: literal2},
+              {string: literal3}
+            ]
+          }
+        )
+      end
+    end
   end
 
   describe "#list" do
