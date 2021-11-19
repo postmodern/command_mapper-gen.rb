@@ -77,6 +77,16 @@ describe CommandMapper::Gen::Parsers::Help do
         expect(command.arguments.keys).to eq([:arg])
       end
     end
+
+    context "when the usage cannot be parsed" do
+      let(:usage) { "FOO BAR BAZ" }
+
+      it "must call #print_parser_error and return nil" do
+        expect(subject).to receive(:print_parser_error)
+
+        expect(subject.parse_usage(usage)).to be(nil)
+      end
+    end
   end
 
   describe "#parse_option_line" do
@@ -134,17 +144,37 @@ describe CommandMapper::Gen::Parsers::Help do
         end
       end
     end
+
+    context "when the option line cannot be parsed" do
+      let(:line) { "   FOO BAR BAZ     Bla bla bla" }
+
+      it "must call #print_parser_error and return nil" do
+        expect(subject).to receive(:print_parser_error)
+
+        expect(subject.parse_option_line(line)).to be(nil)
+      end
+    end
   end
 
   describe "#parse_subcommand" do
     let(:subcommand) { 'bar' }
     let(:line)       { "   #{subcommand}      bla bla bla" }
 
-    before { subject.parse_subcommand_line(line) }
+    context "when the line starts with a subcommand name" do
+      before { subject.parse_subcommand_line(line) }
 
-    it "must parse the subcommand and add it to the command" do
-      expect(command.subcommands.keys).to eq([subcommand])
-      expect(command.subcommands[subcommand].command_name).to eq(subcommand)
+      it "must parse the subcommand and add it to the command" do
+        expect(command.subcommands.keys).to eq([subcommand])
+        expect(command.subcommands[subcommand].command_name).to eq(subcommand)
+      end
+    end
+
+    context "when the line cannot be parsed" do
+      let(:line) { "    " }
+
+      it "must return nil" do
+        expect(subject.parse_subcommand_line(line)).to be(nil)
+      end
     end
   end
 
