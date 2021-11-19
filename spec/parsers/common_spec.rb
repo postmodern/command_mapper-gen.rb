@@ -365,7 +365,7 @@ describe CommandMapper::Gen::Parsers::Common do
       let(:string) { '--a' }
 
       it "must parse it" do
-        expect(subject.parse(string)).to eq(string)
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
       end
     end
 
@@ -373,7 +373,7 @@ describe CommandMapper::Gen::Parsers::Common do
       let(:string) { '--A' }
 
       it "must parse it" do
-        expect(subject.parse(string)).to eq(string)
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
       end
     end
 

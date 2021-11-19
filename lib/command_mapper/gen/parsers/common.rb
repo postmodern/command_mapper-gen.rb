@@ -18,7 +18,9 @@ module CommandMapper
 
         rule(:short_flag) { str('-') >> match['a-zA-Z0-9#'] }
         rule(:long_flag) do
-          str('--') >> match['a-zA-Z'] >> match['a-zA-Z0-9_-'].repeat(0)
+          str('--') >> match['a-zA-Z'] >> match['a-zA-Z0-9'].repeat(1) >> (
+            match['_-'] >> match['a-zA-Z0-9'].repeat(1)
+          ).repeat(0)
         end
 
       end
