@@ -252,12 +252,11 @@ module CommandMapper
         SUBCOMMAND_LINE = /^\s{2,}(#{SUBCOMMAND})(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
 
         def parse_subcommand_line(line)
-          previously_seen_command_names = @command.command_string.split
-
           if (match = line.match(SUBCOMMAND))
             subcommand_name = match[0]
 
-            unless previously_seen_command_names.include?(subcommand_name)
+            # filter out self-referetial subcommands
+            unless subcommand_name == @command.command_name
               @command.subcommand(subcommand_name)
             end
           end

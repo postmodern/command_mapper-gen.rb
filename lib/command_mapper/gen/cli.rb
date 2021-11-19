@@ -99,11 +99,15 @@ module CommandMapper
             @command = Command.new(argv.first)
 
             @parsers.each do |parser|
-              parser.run(@command)
+              parse_command = ->(command) {
+                parser.run(command)
 
-              @command.subcommands.each_value do |subcommand|
-                parser.run(subcommand)
-              end
+                command.subcommands.each_value do |subcommand|
+                  parse_command.call(subcommand)
+                end
+              }
+
+              parse_command.call(@command)
             end
           end
         rescue Error => error
