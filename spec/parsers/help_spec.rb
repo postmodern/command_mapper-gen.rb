@@ -246,12 +246,14 @@ OUTPUT
     before { subject.parse(output) }
 
     it "must populate the command's options" do
-      expect(command.options['--help']).to_not be_nil
-      expect(command.options['--version']).to_not be_nil
+      expect(command.options.keys).to eq(%w[--help --version])
+      expect(command.options['--help']).to be_kind_of(CommandMapper::Gen::Option)
+      expect(command.options['--version']).to be_kind_of(CommandMapper::Gen::Option)
     end
 
     it "must populate the command's arguments" do
-      expect(command.arguments[:string]).to_not be_nil
+      expect(command.arguments.keys).to eq([:string])
+      expect(command.arguments[:string]).to be_kind_of(CommandMapper::Gen::Argument)
     end
 
     context "when the output contains subcomands" do
@@ -274,14 +276,30 @@ OUTPUT
     before { subject.parse(output,command) }
 
     it "must parse the output and populate the command" do
-      expect(command.arguments[:string]).to_not be_nil
-      expect(command.options['--help']).to_not be_nil
-      expect(command.options['--version']).to_not be_nil
+      expect(command.options.keys).to eq(%w[--help --version])
+      expect(command.options['--help']).to be_kind_of(CommandMapper::Gen::Option)
+      expect(command.options['--version']).to be_kind_of(CommandMapper::Gen::Option)
+
+      expect(command.arguments.keys).to eq([:string])
+      expect(command.arguments[:string]).to be_kind_of(CommandMapper::Gen::Argument)
     end
   end
 
   describe ".run" do
     subject { described_class }
+
+    it "must parse the output, populate the commamd, and return the command" do
+      parsed_command = subject.run(command)
+
+      expect(parsed_command).to be(command)
+
+      expect(parsed_command.options.keys).to eq(%w[--help --version])
+      expect(parsed_command.options['--help']).to be_kind_of(CommandMapper::Gen::Option)
+      expect(parsed_command.options['--version']).to be_kind_of(CommandMapper::Gen::Option)
+
+      expect(parsed_command.arguments.keys).to eq([:string])
+      expect(parsed_command.arguments[:string]).to be_kind_of(CommandMapper::Gen::Argument)
+    end
 
     context "when the command is not installed" do
       let(:command_name) { "foo" }
