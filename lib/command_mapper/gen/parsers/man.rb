@@ -56,7 +56,7 @@ module CommandMapper
                 if line =~ /^\s+/
                   parse_synopsis(line.chomp)
                 end
-              when 'OPTIONS'
+              when 'DESCRIPTION', 'OPTIONS'
                 if line =~ OPTION_LINE
                   parse_option_line(line.chomp)
                 end
