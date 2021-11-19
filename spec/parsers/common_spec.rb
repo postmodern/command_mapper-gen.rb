@@ -137,6 +137,14 @@ describe CommandMapper::Gen::Parsers::Common do
       end
     end
 
+    context "when given a '-' character" do
+      let(:string) { '-' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
     context "when given a '_' character" do
       let(:string) { '_' }
 
@@ -170,6 +178,14 @@ describe CommandMapper::Gen::Parsers::Common do
 
       context "and it contains a '_' character" do
         let(:string) { 'Abb_bb' }
+
+        it "must parse it" do
+          expect(subject.parse(string)).to eq(string)
+        end
+      end
+
+      context "and it contains a '-' character" do
+        let(:string) { 'Abb-bb' }
 
         it "must parse it" do
           expect(subject.parse(string)).to eq(string)
@@ -219,6 +235,14 @@ describe CommandMapper::Gen::Parsers::Common do
           expect(subject.parse(string)).to eq(string)
         end
       end
+ 
+      context "and it contains a '-' character" do
+        let(:string) { 'abb-bb' }
+
+        it "must parse it" do
+          expect(subject.parse(string)).to eq(string)
+        end
+      end
     end
 
     context "when given a single uppercase characters" do
@@ -263,7 +287,7 @@ describe CommandMapper::Gen::Parsers::Common do
       it "must not parse it" do
         expect(subject.parse(string)).to eq(string)
       end
- 
+
       context "and it contains a '_' character" do
         let(:string) { 'ABB_BB' }
 
@@ -271,7 +295,15 @@ describe CommandMapper::Gen::Parsers::Common do
           expect(subject.parse(string)).to eq(string)
         end
       end
-   end
+
+      context "and it contains a '-' character" do
+        let(:string) { 'ABB-BB' }
+
+        it "must not parse it" do
+          expect(subject.parse(string)).to eq(string)
+        end
+      end
+    end
 
     context "when given a single lowercase characters" do
       let(:string) { 'a' }

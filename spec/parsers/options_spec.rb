@@ -61,9 +61,7 @@ describe CommandMapper::Gen::Parsers::Options do
           let(:string) { 'FOO-BAR' }
 
           it "must not parse it" do
-            expect {
-              subject.parse(string)
-            }.to raise_error(Parslet::ParseFailed)
+            expect(subject.parse(string)).to eq(string)
           end
         end
       end
@@ -125,9 +123,7 @@ describe CommandMapper::Gen::Parsers::Options do
           let(:string) { 'foo-bar' }
 
           it "must not parse it" do
-            expect {
-              subject.parse(string)
-            }.to raise_error(Parslet::ParseFailed)
+            expect(subject.parse(string)).to eq(string)
           end
         end
       end
@@ -181,9 +177,7 @@ describe CommandMapper::Gen::Parsers::Options do
           let(:string) { 'Foo-bar' }
 
           it "must not parse it" do
-            expect {
-              subject.parse(string)
-            }.to raise_error(Parslet::ParseFailed)
+            expect(subject.parse(string)).to eq(string)
           end
         end
       end
