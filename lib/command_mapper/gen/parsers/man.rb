@@ -5,21 +5,42 @@ module CommandMapper
     module Parsers
       class Man < Help
 
+        #
+        # Parses the command's man page.
+        #
+        # @param [Command] command
+        #   The command object to parse data into.
+        #
+        # @return [Command, nil]
+        #   Returns `nil` if the command could not be found.
+        #
         def self.run(command)
           output = begin
                      `man #{command.man_page} 2>/dev/null`
                    rescue Errno::ENOENT
                    end
 
-          parse(command,output) unless (output.nil? || output.empty?)
+          parse(output,command) unless (output.nil? || output.empty?)
         end
 
         SECTION_REGEXP = /^[A-Z ]+$/
 
+        #
+        # Parses a command synopsis line.
+        #
+        # @param [String] line
+        #   The command string.
+        #
         def parse_synopsis(line)
           parse_usage(line.strip)
         end
 
+        #
+        # Parses the man page output into {#command}.
+        #
+        # @param [String] output
+        #   The plain-text man page output to parse.
+        #
         def parse(output)
           section = nil
 
