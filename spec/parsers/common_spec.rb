@@ -400,5 +400,21 @@ describe CommandMapper::Gen::Parsers::Common do
         expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
       end
     end
+
+    context "when the string contains repeating '-' characters" do
+      let(:string) { '--foo--bar' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when the string contains repeating '_' characters" do
+      let(:string) { '--foo__bar' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
   end
 end
