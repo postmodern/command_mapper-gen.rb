@@ -23,8 +23,6 @@ module CommandMapper
           parse(output,command) unless (output.nil? || output.empty?)
         end
 
-        SECTION_REGEXP = /^[A-Z ]+$/
-
         #
         # Parses a command synopsis line.
         #
@@ -34,6 +32,12 @@ module CommandMapper
         def parse_synopsis(line)
           parse_usage(line.strip)
         end
+
+        SECTION_REGEXP = /^[A-Z ]+$/
+
+        INDENT = '       '
+
+        OPTION_LINE = /^#{INDENT}-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
 
         #
         # Parses the man page output into {#command}.
@@ -53,7 +57,7 @@ module CommandMapper
               case section
               when 'SYNOPSIS'
                 # SYNPSIS lines are indented
-                if line =~ /^\s+/
+                if line.start_with?(INDENT)
                   parse_synopsis(line.chomp)
                 end
               when 'DESCRIPTION', 'OPTIONS'

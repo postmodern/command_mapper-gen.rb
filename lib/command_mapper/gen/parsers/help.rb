@@ -241,13 +241,15 @@ module CommandMapper
 
         OPTION_LINE = /^\s+-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
 
-        SUBCOMMAND_LINE = /^\s{2,}([a-z][a-z0-9_-]+)(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
+        SUBCOMMAND = /[a-z][a-z0-9_-]+/
+
+        SUBCOMMAND_LINE = /^\s{2,}(#{SUBCOMMAND})(?:,\s[a-z][a-z0-9_-]*)?(?:\t|\s{2,}|$)/
 
         def parse_subcommand_line(line)
           previously_seen_command_names = @command.command_string.split
 
-          if (match = line.match(SUBCOMMAND_LINE))
-            subcommand_name = match[1]
+          if (match = line.match(SUBCOMMAND))
+            subcommand_name = match[0]
 
             unless previously_seen_command_names.include?(subcommand_name)
               @command.subcommand(subcommand_name)
