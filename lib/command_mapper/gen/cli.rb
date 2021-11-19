@@ -106,7 +106,9 @@ module CommandMapper
           end
         end
 
-        if (@command.options.empty? && @command.arguments.empty?)
+        if (@command.options.empty? &&
+            @command.arguments.empty? &&
+            @command.subcommands.empty?)
           print_error "no options or arguments detected"
           return -2
         end
