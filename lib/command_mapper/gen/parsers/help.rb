@@ -193,33 +193,35 @@ module CommandMapper
                 separator: separator.to_s
               )
             elsif value_node[:literal_values]
-              map = {}
+              literal_values = []
 
               value_node[:literal_values].each do |node|
-                map[node[:string].to_sym] = node[:string].to_s
+                literal_values << node[:string].to_s
               end
 
               # perform some value coercion
-              case map
-              when {yes: 'YES', no: 'NO'}
-                map = {true => 'YES', false => 'NO'}
-              when {yes: 'Yes', no: 'No'}
-                map = {true => 'Yes', false => 'No'}
-              when {yes: 'yes', no: 'no'}
-                map = {true => 'yes', false => 'no'}
-              when {y: 'Y', n: 'N'}
-                map = {true => 'Y', false => 'N'}
-              when {y: 'y', n: 'n'}
-                map = {true => 'y', false => 'n'}
-              when {enabled: 'ENABLED', disabled: 'DISABLED'}
-                map = {true => 'enabled', false => 'disabled'}
-              when {enabled: 'Enabled', disabled: 'Disabled'}
-                map = {true => 'enabled', false => 'disabled'}
-              when {enabled: 'enabled', disabled: 'disabled'}
-                map = {true => 'enabled', false => 'disabled'}
-              end
+              type = case literal_values
+                     when %w[YES NO]
+                       Types::Map.new(true => 'YES', false => 'NO')
+                     when %w[Yes No]
+                       Types::Map.new(true => 'Yes', false => 'No')
+                     when %w[yes no]
+                       Types::Map.new(true => 'yes', false => 'no')
+                     when %w[Y N]
+                       Types::Map.new(true => 'Y', false => 'N')
+                     when %w[y n]
+                       Types::Map.new(true => 'y', false => 'n')
+                     when %w[ENABLED DISABLED]
+                       Types::Map.new(true => 'ENABLED', false => 'DISABLED')
+                     when %w[Enabled Disabled]
+                       Types::Map.new(true => 'Enabled', false => 'Disabled')
+                     when %w[enabled disabled]
+                       Types::Map.new(true => 'enabled', false => 'disabled')
+                     else
+                       Types::Enum.new(literal_values.map(&:to_sym))
+                     end
 
-              keywords[:value][:type] = Types::Map.new(map)
+              keywords[:value][:type] = type
             elsif value_node[:name]
               case value_node[:name]
               when 'NUM'
