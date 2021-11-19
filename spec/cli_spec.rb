@@ -89,39 +89,6 @@ describe CommandMapper::Gen::CLI do
       end
     end
 
-    context "when given -" do
-      let(:argv) { ['-'] }
-
-      let(:help_output) do
-        [
-          "Usage: yes [STRING]...",
-          "  or:  yes OPTION",
-          "Repeatedly output a line with all specified STRING(s), or 'y'.",
-          "",
-          "      --help     display this help and exit",
-          "      --version  output version information and exit",
-          "",
-          "GNU coreutils online help: <https://www.gnu.org/software/coreutils/>",
-          "Full documentation <https://www.gnu.org/software/coreutils/yes>",
-          "or available locally via: info '(coreutils) yes invocation'",
-        ].join($/) + $/
-      end
-
-      before do
-        $stdin = StringIO.new(help_output)
-      end
-
-      it "must parse `--help` from STDIN and print ruby code" do
-        expect {
-          subject.run(argv)
-        }.to output(expected_output).to_stdout
-      end
-
-      after do
-        $stdin = STDIN
-      end
-    end
-
     context "when an invalid option is given" do
       let(:option) { "--foo"  }
       let(:argv)   { [option] }
@@ -149,7 +116,7 @@ describe CommandMapper::Gen::CLI do
       it "must print an error message and return -1" do
         expect {
           expect(subject.run(argv)).to eq(-1)
-        }.to output("#{described_class::PROGRAM_NAME}: expects a COMMAND_NAME or -#{$/}").to_stderr
+        }.to output("#{described_class::PROGRAM_NAME}: expects a COMMAND_NAME#{$/}").to_stderr
       end
     end
   end

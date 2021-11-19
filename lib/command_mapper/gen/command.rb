@@ -14,7 +14,7 @@ module CommandMapper
 
       # The command's name.
       #
-      # @return [String, nil]
+      # @return [String]
       attr_accessor :command_name
 
       # The parent command of this sub-command.
@@ -34,10 +34,10 @@ module CommandMapper
       #
       # Initializes the parsed command.
       #
-      # @param [String, nil] command_name
+      # @param [String] command_name
       #   The command name or path to the command.
       #
-      def initialize(command_name=nil,parent_command=nil)
+      def initialize(command_name,parent_command=nil)
         @command_name   = command_name
         @parent_command = parent_command
 
@@ -114,9 +114,7 @@ module CommandMapper
       #   The class name or `nil` if {#command_name} is also `nil`.
       #
       def class_name
-        if @command_name
-          @command_name.split(/[_-]+/).map(&:capitalize).join
-        end
+        @command_name.split(/[_-]+/).map(&:capitalize).join
       end
 
       #
@@ -129,17 +127,15 @@ module CommandMapper
         lines = []
 
         if @parent_command.nil?
-          if @command_name
-            lines << "require 'command_mapper/command'"
-            lines << ""
-            lines << "#"
-            lines << "# Represents the `#{@command_name}` command"
-            lines << "#"
+          lines << "require 'command_mapper/command'"
+          lines << ""
+          lines << "#"
+          lines << "# Represents the `#{@command_name}` command"
+          lines << "#"
 
-            lines << "class #{class_name} < CommandMapper::Command"
-            lines << ""
-            lines << "  command #{@command_name.inspect} do"
-          end
+          lines << "class #{class_name} < CommandMapper::Command"
+          lines << ""
+          lines << "  command #{@command_name.inspect} do"
 
           indent = "    "
         else
@@ -183,10 +179,8 @@ module CommandMapper
         end
 
         if @parent_command.nil?
-          if @command_name
-            lines << "  end"
-            lines << ''
-          end
+          lines << "  end"
+          lines << ''
         end
 
         lines << "end"

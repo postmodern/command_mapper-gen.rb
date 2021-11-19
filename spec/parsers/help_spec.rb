@@ -24,10 +24,6 @@ describe CommandMapper::Gen::Parsers::Help do
       expect(command.arguments[:arg2].name).to eq(:arg2)
     end
 
-    it "must set the Argument#required to true" do
-      expect(command.arguments[:arg2].required).to be(true)
-    end
-
     context "when the argument is optional" do
       let(:usage) { "#{command_name} ARG1 [ARG2]" }
 
@@ -79,7 +75,7 @@ describe CommandMapper::Gen::Parsers::Help do
     end
 
     context "when the usage cannot be parsed" do
-      let(:usage) { "FOO BAR BAZ" }
+      let(:usage) { "  " }
 
       it "must call #print_parser_error and return nil" do
         expect(subject).to receive(:print_parser_error)
@@ -430,7 +426,9 @@ OUTPUT
       expect(command.arguments[:string]).to be_kind_of(CommandMapper::Gen::Argument)
     end
 
-    context "when the output contains subcomands" do
+    context "when the output contains subcommands" do
+      let(:command_name) { 'runc' }
+
       let(:output) { subcommands_output }
 
       it "must populate the command's subcommands" do
@@ -438,6 +436,44 @@ OUTPUT
           %w[
             checkpoint create delete events exec init kill list pause ps restore
             resume run spec start state update help
+          ]
+        )
+      end
+    end
+
+    context "when the usage: command is on the following line" do
+      let(:command) do
+        CommandMapper::Gen::Command.new(
+          'tag', CommandMapper::Gen::Command.new(
+            'image', CommandMapper::Gen::Command.new(
+              'podman'
+            )
+          )
+        )
+      end
+
+      let(:output) do
+        <<OUTPUT
+Add an additional name to a local image
+
+Description:
+  Adds one or more additional names to locally-stored image.
+
+Usage:
+  podman image tag IMAGE TARGET_NAME [TARGET_NAME...]
+
+Examples:
+  podman image tag 0e3bbc2 fedora:latest
+  podman image tag imageID:latest myNewImage:newTag
+  podman image tag httpd myregistryhost:5000/fedora/httpd:v2
+
+OUTPUT
+      end
+
+      it "must parse the line after the usage:" do
+        expect(command.arguments.keys).to eq(
+          [
+            :image, :target_name
           ]
         )
       end

@@ -89,34 +89,71 @@ module CommandMapper
           warn ""
         end
 
+        # List of argument names to ignore
+        IGNORED_ARGUMENT_NAMES = %w[option options opts]
+
+        #
+        # Determines whether to skip an argument based on it's name.
+        #
+        # @param [String] name
+        #   The argument name.
+        #
+        # @return [Boolean]
+        #   Indicates whether to skip the argument or not.
+        #
+        def ignore_argument?(name)
+          name == @command.command_name || 
+            IGNORED_ARGUMENT_NAMES.any? { |suffix|
+              name == suffix || name.end_with?(suffix)
+            }
+        end
+
         #
         # Parses an individual argument node.
         #
         # @param [Hash] node
         #   An argument node.
         #
-        def parse_argument(node)
-          keywords = {}
+        def parse_argument(argument, **kwargs)
+          name     = argument[:name].to_s.downcase
+          keywords = kwargs.dup
 
-          if node[:optional]
-            argument = node[:optional][:argument]
-            keywords[:required] = false
-          else
-            argument = node[:argument]
-            keywords[:required] = true
+          if argument[:repeats]
+            keywords[:repeats] = true
           end
 
-          if argument
-            if node[:repeats] || argument[:repeats]
-              keywords[:repeats] = true
-            end
+          # ignore [OPTIONS] or [opts]
+          unless ignore_argument?(name)
+            @command.argument(name.to_sym,**keywords)
+          end
+        end
 
-            name = argument[:name].to_s.downcase.to_sym
+        #
+        # Parses a node within the arguments node.
+        #
+        # @param [Hash] node
+        #
+        def parse_argument_node(node,**kwargs)
+          if node[:optional]
+            parse_arguments(node[:optional], required: false, **kwargs)
+          else
+            parse_argument(node[:argument], **kwargs)
+          end
+        end
 
-            # ignore [OPTIONS] or [opts]
-            unless (name == :option || name == :options || name == :opts)
-              @command.argument(name,**keywords)
+        #
+        # Parses a collection of arguments.
+        #
+        # @param [Array<Hash>, Hash] arguments
+        #
+        def parse_arguments(arguments, **kwargs)
+          case arguments
+          when Array
+            arguments.each do |node|
+              parse_argument_node(node, **kwargs)
             end
+          when Hash
+            parse_argument_node(arguments, **kwargs)
           end
         end
 
@@ -128,24 +165,17 @@ module CommandMapper
         def parse_usage(usage)
           parser = Usage.new
 
+          # remove the command name and any subcommands
+          usage  = usage.sub("#{@command.command_string} ",'')
+
           tree = begin
-                   parser.parse(usage)
+                   parser.args.parse(usage)
                  rescue Parslet::ParseFailed => error
                    print_parser_error(usage,error)
                    return
                  end
 
-          if (command_name = tree[:command_name])
-            # optionally set the program name, if it already hasn't been given
-            @command.command_name ||= command_name.to_s
-          end
-
-          case tree[:arguments]
-          when Array
-            tree[:arguments].each(&method(:parse_argument))
-          when Hash
-            parse_argument(tree[:arguments])
-          end
+          parse_arguments(tree)
         end
 
         #
@@ -241,11 +271,15 @@ module CommandMapper
           end
         end
 
-        USAGE = /^usage:\s+/i
+        USAGE_PREFIX = /^usage:\s+/i
 
-        USAGE_LINE = /#{USAGE}[a-z][a-z0-9_-]*/i
+        USAGE_LINE = /#{USAGE_PREFIX}[a-z][a-z0-9_-]*/i
 
-        OPTION_LINE = /^\s+-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
+        USAGE_SECTION = /^usage:$/i
+
+        INDENT = /^\s{2,}/
+
+        OPTION_LINE = /#{INDENT}-(?:[A-Za-z0-9]|-[A-Za-z0-9])/
 
         SUBCOMMAND = /[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*/
 
@@ -269,13 +303,25 @@ module CommandMapper
         #   The full `--help` output.
         #
         def parse(output)
+          usage_on_next_line = false
+
           output.each_line do |line|
-            if line =~ USAGE_LINE
-              parse_usage(line.sub(USAGE,'').chomp)
-            elsif line =~ OPTION_LINE
-              parse_option_line(line.chomp)
-            elsif line =~ SUBCOMMAND_LINE
-              parse_subcommand_line(line.chomp)
+            if line =~ USAGE_SECTION
+              usage_on_next_line = true
+            elsif usage_on_next_line
+              if line =~ INDENT
+                parse_usage(line.strip)
+              else
+                usage_on_next_line = false
+              end
+            else
+              if line =~ USAGE_LINE
+                parse_usage(line.sub(USAGE_PREFIX,'').chomp)
+              elsif line =~ OPTION_LINE
+                parse_option_line(line.chomp)
+              elsif line =~ SUBCOMMAND_LINE
+                parse_subcommand_line(line.chomp)
+              end
             end
           end
         end

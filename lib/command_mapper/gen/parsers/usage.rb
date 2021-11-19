@@ -12,10 +12,16 @@ module CommandMapper
           (word >> (space >> word).repeat(1)).as(:words) >> ellipsis?
         end
 
+        rule(:ignored_argument_names) do
+          str("OPTIONS") | str('OPTS') | str("options") | str('opts')
+        end
+
         rule(:argument_name) do
           (
-            (uppercase_name | capitalized_name | lowercase_name).as(:name) >>
-            ellipsis?
+            (
+              (uppercase_name | capitalized_name | lowercase_name) >>
+              (space >> ignored_argument_names).maybe
+            ).as(:name) >> ellipsis?
           ).as(:argument)
         end
 
@@ -92,6 +98,8 @@ module CommandMapper
           ).as(:optional)
         end
 
+        rule(:dash) { match['-'].repeat(1,2) }
+
         rule(:arg) do
           (
             # "-o" or "--opt"
@@ -105,12 +113,14 @@ module CommandMapper
             # "[...]"
             optional_group |
             # "..."
-            ellipsis
+            ellipsis |
+            # "--" or "-"
+            dash
           )
         end
 
         rule(:arg_separator) do
-          (space >> (str('|') >> space).maybe)
+          str('|') | (space >> (str('|') >> space).maybe)
         end
         rule(:args) { arg >> ( arg_separator >> arg).repeat(0) }
 

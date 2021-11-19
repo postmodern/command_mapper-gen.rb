@@ -997,8 +997,8 @@ describe CommandMapper::Gen::Parsers::Usage do
     context "when given a '|'" do
       let(:string) { '|' }
 
-      it "must not parse it" do
-        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      it "must parse it" do
+        expect(subject.parse(string)).to eq(string)
       end
     end
   end

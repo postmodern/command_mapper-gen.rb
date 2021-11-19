@@ -85,30 +85,23 @@ module CommandMapper
                end
 
         if argv.empty?
-          print_error "expects a COMMAND_NAME or -"
+          print_error "expects a COMMAND_NAME"
           return -1
         end
 
         begin
-          if argv.first == '-'
-            @command = Command.new
-            parser   = Parsers::Help.new(@command)
+          @command = Command.new(argv.first)
 
-            parser.parse($stdin.read)
-          else
-            @command = Command.new(argv.first)
+          @parsers.each do |parser|
+            parse_command = ->(command) {
+              parser.run(command)
 
-            @parsers.each do |parser|
-              parse_command = ->(command) {
-                parser.run(command)
+              command.subcommands.each_value do |subcommand|
+                parse_command.call(subcommand)
+              end
+            }
 
-                command.subcommands.each_value do |subcommand|
-                  parse_command.call(subcommand)
-                end
-              }
-
-              parse_command.call(@command)
-            end
+            parse_command.call(@command)
           end
         rescue Error => error
           print_error(error.message)
@@ -139,7 +132,7 @@ module CommandMapper
       #
       def option_parser
         OptionParser.new do |opts|
-          opts.banner = "usage: #{PROGRAM_NAME} [options] {COMMAND_NAME|-}"
+          opts.banner = "usage: #{PROGRAM_NAME} [options] COMMAND_NAME"
 
           opts.separator ""
           opts.separator "Options:"

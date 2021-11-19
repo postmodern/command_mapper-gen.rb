@@ -166,19 +166,6 @@ describe CommandMapper::Gen::Command do
           )
         end
       end
-
-      context "when #command_name is nil" do
-        let(:command_name) { nil }
-
-        it "must not print the header, class definition, or command block" do
-          expect(subject.to_ruby).to_not include(
-            "require 'command_mapper/command'"
-          )
-
-          expect(subject.to_ruby).to_not include("class")
-          expect(subject.to_ruby).to_not include("command ")
-        end
-      end
     end
 
     context "when #parent_command is set" do
