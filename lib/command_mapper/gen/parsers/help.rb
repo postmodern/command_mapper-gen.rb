@@ -1,6 +1,7 @@
 require 'command_mapper/gen/parsers/options'
 require 'command_mapper/gen/parsers/usage'
 require 'command_mapper/gen/command'
+require 'command_mapper/gen/exceptions'
 
 module CommandMapper
   module Gen
@@ -47,6 +48,9 @@ module CommandMapper
         # @return [Command, nil]
         #   Returns `nil` if the command could not be found.
         #
+        # @raise [CommandNotInstalled]
+        #   The command could not be found on the system.
+        #
         def self.run(command)
           output = nil
 
@@ -54,7 +58,7 @@ module CommandMapper
             output = `#{command.command_string} --help 2>&1`
           rescue Errno::ENOENT
             # command not found
-            return
+            raise(CommandNotInstalled,"command #{command.command_name.inspect} is not installed")
           end
 
           if output.empty?

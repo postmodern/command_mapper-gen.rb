@@ -75,6 +75,18 @@ describe CommandMapper::Gen::CLI do
           subject.run(argv)
         }.to output(expected_output).to_stdout
       end
+
+      context "but the command isn't installed" do
+        before do
+          allow(CommandMapper::Gen::Parsers::Help).to receive(:`).with("#{command_name} --help 2>&1").and_raise(Errno::ENOENT.new(command_name))
+        end
+
+        it "must print an error and exit with -1" do
+          expect {
+            expect(subject.run(argv)).to eq(-1)
+          }.to output("#{described_class::PROGRAM_NAME}: command #{command_name.inspect} is not installed#{$/}").to_stderr
+        end
+      end
     end
 
     context "when given -" do

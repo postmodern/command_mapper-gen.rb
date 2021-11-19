@@ -482,8 +482,10 @@ OUTPUT
         allow(subject).to receive(:`).and_raise(Errno::ENOENT.new("foo"))
       end
 
-      it "must return nil" do
-        expect(subject.run(command)).to be(nil)
+      it do
+        expect {
+          subject.run(command)
+        }.to raise_error(CommandMapper::Gen::CommandNotInstalled,"command #{command_name.inspect} is not installed")
       end
     end
 

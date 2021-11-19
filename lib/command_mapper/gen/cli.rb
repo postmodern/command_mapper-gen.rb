@@ -89,21 +89,26 @@ module CommandMapper
           return -1
         end
 
-        if argv.first == '-'
-          @command = Command.new
-          parser   = Parsers::Help.new(@command)
+        begin
+          if argv.first == '-'
+            @command = Command.new
+            parser   = Parsers::Help.new(@command)
 
-          parser.parse($stdin.read)
-        else
-          @command = Command.new(argv.first)
+            parser.parse($stdin.read)
+          else
+            @command = Command.new(argv.first)
 
-          @parsers.each do |parser|
-            parser.run(@command)
+            @parsers.each do |parser|
+              parser.run(@command)
 
-            @command.subcommands.each_value do |subcommand|
-              parser.run(subcommand)
+              @command.subcommands.each_value do |subcommand|
+                parser.run(subcommand)
+              end
             end
           end
+        rescue Error => error
+          print_error(error.message)
+          return -1
         end
 
         if (@command.options.empty? &&
