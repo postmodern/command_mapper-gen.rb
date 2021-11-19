@@ -58,7 +58,7 @@ module CommandMapper
                 end
               when 'OPTIONS'
                 if line =~ OPTION_LINE
-                  parse_option(line.chomp)
+                  parse_option_line(line.chomp)
                 end
               end
             end
