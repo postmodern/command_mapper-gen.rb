@@ -456,6 +456,14 @@ describe CommandMapper::Gen::Parsers::Usage do
         expect(subject.parse(string)).to eq({name: string})
       end
     end
+
+    context "when given a camelCase name" do
+      let(:string) { 'fooBar' }
+
+      it "must capture it" do
+        expect(subject.parse(string)).to eq({name: string})
+      end
+    end
   end
 
   describe "#option_value" do

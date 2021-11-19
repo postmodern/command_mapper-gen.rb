@@ -161,6 +161,14 @@ describe CommandMapper::Gen::Parsers::Common do
       end
     end
 
+    context "when more than one uppercase character" do
+      let(:string) { 'AB' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
     context "when given one uppercase character and a lowercase character" do
       let(:string) { 'Ab' }
 
@@ -214,6 +222,114 @@ describe CommandMapper::Gen::Parsers::Common do
 
       it "must not parse it" do
         expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+  end
+
+  describe "#camelcase_name" do
+    subject { super().camelcase_name }
+
+    context "when given a single lowercase character" do
+      let(:string) { 'a' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given a '-' character" do
+      let(:string) { '-' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given a '_' character" do
+      let(:string) { '_' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given one uppercase character" do
+      let(:string) { 'A' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given one uppercase character and a lowercase character" do
+      let(:string) { 'Ab' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given one lowercase character" do
+      let(:string) { 'a' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given more than one lowercase characters" do
+      let(:string) { 'aaaaa' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given one or more lowercase characters then an uppercase character" do
+      let(:string) { 'aaaaaB' }
+
+      it "must not parse it" do
+        expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+      end
+    end
+
+    context "when given one or more lowercase characters, an uppercase character, then one or more lowercase characters" do
+      let(:string) { 'aaaaaBaaaa' }
+
+      it "must parse it" do
+        expect(subject.parse(string)).to eq(string)
+      end
+
+      context "and it contains a '_' character" do
+        let(:string) { 'aaa_Baa' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
+      end
+
+      context "but it contains repeating '_' characters" do
+        let(:string) { 'aaa__Baa' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
+      end
+
+      context "and it contains a '-' character" do
+        let(:string) { 'aaa-Baa' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
+      end
+
+      context "but it contains repeating '-' characters" do
+        let(:string) { 'aaa--Baa' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
       end
     end
   end

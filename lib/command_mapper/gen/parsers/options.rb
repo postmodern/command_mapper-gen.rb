@@ -5,7 +5,9 @@ module CommandMapper
     module Parsers
       class Options < Common
 
-        rule(:name) { lowercase_name | capitalized_name | uppercase_name }
+        rule(:name) do
+          camelcase_name | lowercase_name | capitalized_name | uppercase_name
+        end
 
         rule(:literal_values) do
           (

@@ -182,6 +182,72 @@ describe CommandMapper::Gen::Parsers::Options do
         end
       end
     end
+
+    context "when given a camelCase name" do
+      context "and it's multiple characters" do
+        let(:string) { 'aaBcc' }
+
+        it "must parse it" do
+          expect(subject.parse(string)).to eq(string)
+        end
+
+        context "but it starts with a digit" do
+          let(:string) { '1aaBcc' }
+
+          it "must not parse it" do
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
+          end
+        end
+
+        context "and it contains a digit" do
+          let(:string) { 'aaB1cc' }
+
+          it "must parse it" do
+            expect(subject.parse(string)).to eq(string)
+          end
+        end
+
+        context "and it ends with a digit" do
+          let(:string) { 'aaBcc1' }
+
+          it "must parse it" do
+            expect(subject.parse(string)).to eq(string)
+          end
+        end
+
+        context "but it starts with a '_'" do
+          let(:string) { '_aaBcc' }
+
+          it "must not parse it" do
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
+          end
+        end
+
+        context "and it contains a '_'" do
+          let(:string) { 'aa_Bcc' }
+
+          it "must not parse it" do
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
+          end
+        end
+
+        context "and it contains a '-'" do
+          let(:string) { 'aa-Bcc' }
+
+          it "must not parse it" do
+            expect {
+              subject.parse(string)
+            }.to raise_error(Parslet::ParseFailed)
+          end
+        end
+      end
+    end
   end
 
   describe "#literal_values" do

@@ -39,7 +39,7 @@ module CommandMapper
         end
 
         rule(:option_value_name) do
-          (lowercase_name | capitalized_name).as(:name) 
+          (camelcase_name | lowercase_name | capitalized_name).as(:name) 
         end
 
         rule(:option_value) { option_value_strings | option_value_name }

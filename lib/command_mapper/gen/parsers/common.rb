@@ -12,12 +12,6 @@ module CommandMapper
         rule(:ellipsis)  { str('...') }
         rule(:ellipsis?) { (space? >> ellipsis.as(:repeats)).maybe }
 
-        rule(:capitalized_name) do
-          match['A-Z'] >> match['a-z0-9'].repeat(1) >> (
-            match['_-'] >> match['a-z0-9'].repeat(1)
-          ).repeat(0)
-        end
-
         rule(:lowercase_name) do
           match['a-z'] >> match['a-z0-9'].repeat(0) >> (
             match['_-'] >> match['a-z0-9'].repeat(1)
@@ -27,6 +21,18 @@ module CommandMapper
         rule(:uppercase_name) do
           match['A-Z'] >> match['A-Z0-9'].repeat(0) >> (
             match['_-'] >> match['A-Z0-9'].repeat(1)
+          ).repeat(0)
+        end
+
+        rule(:camelcase_name) do
+          match['a-z'] >> match['a-z0-9'].repeat(0) >> (
+            match['A-Z'] >> match['a-z0-9'].repeat(1)
+          ).repeat(1)
+        end
+
+        rule(:capitalized_name) do
+          match['A-Z'] >> match['a-z0-9'].repeat(1) >> (
+            match['_-'] >> match['a-z0-9'].repeat(1)
           ).repeat(0)
         end
 
