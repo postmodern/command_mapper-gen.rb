@@ -14,7 +14,7 @@ describe CommandMapper::Gen::Parsers::Help do
   end
 
   describe "#parse_usage" do
-    let(:usage) { "#{command_name} ARG1 ARG2"}
+    let(:usage) { "#{command_name} ARG1 ARG2" }
 
     before { subject.parse_usage(usage) }
 
@@ -29,7 +29,7 @@ describe CommandMapper::Gen::Parsers::Help do
     end
 
     context "when the argument is optional" do
-      let(:usage) { "#{command_name} ARG1 [ARG2]"}
+      let(:usage) { "#{command_name} ARG1 [ARG2]" }
 
       before { subject.parse_usage(usage) }
 
@@ -39,7 +39,7 @@ describe CommandMapper::Gen::Parsers::Help do
     end
 
     context "when the argument repeats" do
-      let(:usage) { "#{command_name} ARG1 ARG2..."}
+      let(:usage) { "#{command_name} ARG1 ARG2..." }
 
       before { subject.parse_usage(usage) }
 
