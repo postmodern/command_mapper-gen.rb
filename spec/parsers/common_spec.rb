@@ -184,11 +184,27 @@ describe CommandMapper::Gen::Parsers::Common do
         end
       end
 
+      context "but it contains repeating '_' characters" do
+        let(:string) { 'Abb__bb' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
+      end
+
       context "and it contains a '-' character" do
         let(:string) { 'Abb-bb' }
 
         it "must parse it" do
           expect(subject.parse(string)).to eq(string)
+        end
+      end
+
+      context "but it contains repeating '-' characters" do
+        let(:string) { 'Abb--bb' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
         end
       end
     end
@@ -236,11 +252,27 @@ describe CommandMapper::Gen::Parsers::Common do
         end
       end
  
+      context "but it contains repeating '_' characters" do
+        let(:string) { 'abb__bb' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
+      end
+
       context "and it contains a '-' character" do
         let(:string) { 'abb-bb' }
 
         it "must parse it" do
           expect(subject.parse(string)).to eq(string)
+        end
+      end
+
+      context "but it contains repeating '-' characters" do
+        let(:string) { 'abb--bb' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
         end
       end
     end
@@ -295,12 +327,28 @@ describe CommandMapper::Gen::Parsers::Common do
           expect(subject.parse(string)).to eq(string)
         end
       end
+ 
+      context "but it contains repeating '_' characters" do
+        let(:string) { 'ABB__BB' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
+        end
+      end
 
       context "and it contains a '-' character" do
         let(:string) { 'ABB-BB' }
 
         it "must not parse it" do
           expect(subject.parse(string)).to eq(string)
+        end
+      end
+
+      context "but it contains repeating '-' characters" do
+        let(:string) { 'ABB--BB' }
+
+        it "must not parse it" do
+          expect { subject.parse(string) }.to raise_error(Parslet::ParseFailed)
         end
       end
     end
