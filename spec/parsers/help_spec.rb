@@ -47,6 +47,36 @@ describe CommandMapper::Gen::Parsers::Help do
         expect(command.arguments[:arg2].repeats).to be(true)
       end
     end
+
+    context "when the argument is named OPTS" do
+      let(:usage) { "#{command_name} [OPTS] ARG..." }
+
+      before { subject.parse_usage(usage) }
+
+      it "must ignore it" do
+        expect(command.arguments.keys).to eq([:arg])
+      end
+    end
+
+    context "when the argument is named OPTION" do
+      let(:usage) { "#{command_name} [OPTION] ARG..." }
+
+      before { subject.parse_usage(usage) }
+
+      it "must ignore it" do
+        expect(command.arguments.keys).to eq([:arg])
+      end
+    end
+
+    context "when the argument is named OPTIONS" do
+      let(:usage) { "#{command_name} [OPTIONS] ARG..." }
+
+      before { subject.parse_usage(usage) }
+
+      it "must ignore it" do
+        expect(command.arguments.keys).to eq([:arg])
+      end
+    end
   end
 
   describe "#parse_option_line" do
