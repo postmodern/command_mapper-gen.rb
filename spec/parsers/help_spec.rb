@@ -11,6 +11,18 @@ describe CommandMapper::Gen::Parsers::Help do
     it "must set #command" do
       expect(subject.command).to be(command)
     end
+
+    context "when a block is given" do
+      let(:block) do
+        proc { |line,error| }
+      end
+
+      subject { described_class.new(command,&block) }
+
+      it "must set #parser_error_callback" do
+        expect(subject.parser_error_callback).to eq(block)
+      end
+    end
   end
 
   describe "#parse_usage" do
@@ -77,10 +89,25 @@ describe CommandMapper::Gen::Parsers::Help do
     context "when the usage cannot be parsed" do
       let(:usage) { "  " }
 
-      it "must call #print_parser_error and return nil" do
-        expect(subject).to receive(:print_parser_error)
-
+      it "must return nil" do
         expect(subject.parse_usage(usage)).to be(nil)
+      end
+
+      context "when a parser error callback is set" do
+        it "must pass the text and parser error to the callback" do
+          yielded_line = nil
+          yielded_parser_error = nil
+
+          subject = described_class.new(command) do |line,parser_error|
+            yielded_line = line
+            yielded_parser_error = parser_error
+          end
+
+          expect(subject.parse_usage(usage)).to be(nil)
+
+          expect(yielded_line).to eq(usage)
+          expect(yielded_parser_error).to be_kind_of(Parslet::ParseFailed)
+        end
       end
     end
   end
@@ -258,10 +285,25 @@ describe CommandMapper::Gen::Parsers::Help do
     context "when the option line cannot be parsed" do
       let(:line) { "   FOO BAR BAZ     Bla bla bla" }
 
-      it "must call #print_parser_error and return nil" do
-        expect(subject).to receive(:print_parser_error)
-
+      it "must return nil" do
         expect(subject.parse_option_line(line)).to be(nil)
+      end
+
+      context "when an parser error callback is given" do
+        it "must pass the text and parser error to the callback" do
+          yielded_line = nil
+          yielded_parser_error = nil
+
+          subject = described_class.new(command) do |line,parser_error|
+            yielded_line = line
+            yielded_parser_error = parser_error
+          end
+
+          expect(subject.parse_option_line(line)).to be(nil)
+
+          expect(yielded_line).to eq(line)
+          expect(yielded_parser_error).to be_kind_of(Parslet::ParseFailed)
+        end
       end
     end
   end
@@ -385,6 +427,7 @@ OUTPUT
     end
 
     context "when the `--help` output includes subcommands" do
+      let(:command_name) { 'runc' }
       let(:output) { subcommands_output }
 
       it "must populate the command's subcommands" do
@@ -405,7 +448,9 @@ OUTPUT
         )
       end
 
-      it "must still parse and populate arguments"
+      it "must still parse and populate arguments" do
+        expect(command.arguments.keys).to eq([:command, :arguments])
+      end
     end
   end
 

@@ -27,6 +27,11 @@ module CommandMapper
       # @return [Array<Parsers::Help, Parsers::Man>]
       attr_reader :parsers
 
+      # Specifies whether debug output should be printed.
+      #
+      # @return [Boolean, nil]
+      attr_reader :debug
+
       # The parsed command.
       #
       # @return [Command]
@@ -43,6 +48,7 @@ module CommandMapper
       def initialize
         @output  = nil
         @parsers = PARSERS.values
+        @debug   = false
         @command = nil
 
         @option_parser = option_parser
@@ -94,7 +100,9 @@ module CommandMapper
 
           @parsers.each do |parser|
             parse_command = ->(command) {
-              parser.run(command)
+              parser.run(command) do |line,parse_error|
+                print_parser_error(command,line,parse_error)
+              end
 
               command.subcommands.each_value do |subcommand|
                 parse_command.call(subcommand)
@@ -145,6 +153,10 @@ module CommandMapper
             @parsers = [parser]
           end
 
+          opts.on('-d','--debug','Enables debugging output') do
+            @debug = true
+          end
+
           opts.on('-V','--version','Print the version') do
             puts "#{PROGRAM_NAME} #{VERSION}"
             exit
@@ -170,6 +182,35 @@ module CommandMapper
       #
       def print_error(error)
         $stderr.puts "#{PROGRAM_NAME}: #{error}"
+      end
+
+      #
+      # Prints a parsing error to stderr.
+      #
+      # @param [Command] command
+      #   The command that was being populated.
+      #
+      # @param [String] string
+      #   The text that could not be parsed.
+      #
+      # @param [Parslet::ParseError] error
+      #   The parsing error.
+      #
+      def print_parser_error(command,string,error)
+        $stderr.puts "Failed to parse line in `#{command.command_string} --help`:"
+        $stderr.puts ""
+        $stderr.puts "  #{string}"
+        $stderr.puts
+
+        if @debug
+          error.parse_failure_cause.ascii_tree.each_line do |backtrace_line|
+            $stderr.puts "  #{backtrace_line}"
+          end
+        else
+          $stderr.puts error.message
+        end
+
+        $stderr.puts ""
       end
 
       #

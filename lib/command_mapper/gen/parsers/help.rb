@@ -11,13 +11,30 @@ module CommandMapper
         # @return [Command]
         attr_reader :command
 
+        # The callback to pass any parser errors.
+        #
+        # @return [Proc(String, Parslet::ParserFailed), nil]
+        attr_reader :parser_error_callback
+
         #
         # Initializes the `--help` output parser.
         #
         # @param [Command] command
         #
-        def initialize(command)
+        # @yield [line, parser_error]
+        #   If a block is given, it will be used as a callback for any parser
+        #   errors.
+        #
+        # @yieldparam [String] line
+        #   The line that triggered the parser error.
+        #
+        # @yieldparam [Parslet::ParserFailed] parser_error
+        #   The parser error.
+        #
+        def initialize(command,&block)
           @command = command
+
+          @parser_error_callback = block
         end
 
         #
@@ -32,8 +49,8 @@ module CommandMapper
         # @return [Command]
         #   The parsed command.
         #
-        def self.parse(output,command)
-          parser = new(command)
+        def self.parse(output,command,&block)
+          parser = new(command,&block)
           parser.parse(output)
 
           return command
@@ -51,7 +68,7 @@ module CommandMapper
         # @raise [CommandNotInstalled]
         #   The command could not be found on the system.
         #
-        def self.run(command)
+        def self.run(command,&block)
           output = nil
 
           begin
@@ -66,27 +83,7 @@ module CommandMapper
             output = `#{command.command_string} -h 2>&1`
           end
 
-          parse(output,command) unless output.empty?
-        end
-
-        #
-        # Prints a parser error.
-        #
-        # @param [String] line
-        #   The line that could not be parsed.
-        #
-        # @param [Parslet::ParseFailed] error
-        #   The parsing error.
-        #
-        def print_parser_error(line,error)
-          warn "Failed to parse line:"
-          warn ""
-          warn "  #{line}"
-
-          error.parse_failure_cause.ascii_tree.each_line do |backtrace_line|
-            warn "  #{backtrace_line}"
-          end
-          warn ""
+          parse(output,command,&block) unless output.empty?
         end
 
         # List of argument names to ignore
@@ -114,7 +111,7 @@ module CommandMapper
         # @param [Hash] node
         #   An argument node.
         #
-        def parse_argument(argument, **kwargs)
+        def parse_argument(argument,**kwargs)
           name     = argument[:name].to_s.downcase
           keywords = kwargs.dup
 
@@ -146,14 +143,14 @@ module CommandMapper
         #
         # @param [Array<Hash>, Hash] arguments
         #
-        def parse_arguments(arguments, **kwargs)
+        def parse_arguments(arguments,**kwargs)
           case arguments
           when Array
             arguments.each do |node|
-              parse_argument_node(node, **kwargs)
+              parse_argument_node(node,**kwargs)
             end
           when Hash
-            parse_argument_node(arguments, **kwargs)
+            parse_argument_node(arguments,**kwargs)
           end
         end
 
@@ -166,12 +163,15 @@ module CommandMapper
           parser = Usage.new
 
           # remove the command name and any subcommands
-          usage  = usage.sub("#{@command.command_string} ",'')
+          args = usage.sub("#{@command.command_string} ",'')
 
           tree = begin
-                   parser.args.parse(usage)
+                   parser.args.parse(args)
                  rescue Parslet::ParseFailed => error
-                   print_parser_error(usage,error)
+                   if @parser_error_callback
+                     @parser_error_callback.call(usage,error)
+                   end
+
                    return
                  end
 
@@ -190,7 +190,10 @@ module CommandMapper
           tree   = begin
                      parser.parse(line)
                    rescue Parslet::ParseFailed => error
-                     print_parser_error(line,error)
+                     if @parser_error_callback
+                       @parser_error_callback.call(line,error)
+                     end
+
                      return
                    end
 
@@ -316,7 +319,9 @@ module CommandMapper
               end
             else
               if line =~ USAGE_LINE
-                parse_usage(line.sub(USAGE_PREFIX,'').chomp)
+                usage = line.sub(USAGE_PREFIX,'').chomp
+
+                parse_usage(usage)
               elsif line =~ OPTION_LINE
                 parse_option_line(line.chomp)
               elsif line =~ SUBCOMMAND_LINE
