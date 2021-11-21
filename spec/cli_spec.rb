@@ -18,6 +18,10 @@ describe CommandMapper::Gen::CLI do
     it "must initialize #option_parser" do
       expect(subject.option_parser).to be_kind_of(OptionParser)
     end
+
+    it "must set #debug to false" do
+      expect(subject.debug).to be(false)
+    end
   end
 
   describe ".run" do
@@ -181,6 +185,26 @@ describe CommandMapper::Gen::CLI do
 
       it "must set #parsers to [Parser::Man]" do
         expect(subject.parsers).to eq([Parsers::Man])
+      end
+    end
+
+    context "when given -d" do
+      let(:argv) { ['-d'] }
+
+      before { subject.option_parser.parse(argv) }
+
+      it "must set #debug to true" do
+        expect(subject.debug).to be(true)
+      end
+    end
+
+    context "when given --debug" do
+      let(:argv) { ['--debug'] }
+
+      before { subject.option_parser.parse(argv) }
+
+      it "must set #debug to true" do
+        expect(subject.debug).to be(true)
       end
     end
 
