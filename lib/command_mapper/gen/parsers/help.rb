@@ -113,7 +113,7 @@ module CommandMapper
         #
         def parse_argument(argument,**kwargs)
           name     = argument[:name].to_s.downcase
-          keywords = kwargs.dup
+          keywords = kwargs
 
           if argument[:repeats]
             keywords[:repeats] = true
@@ -131,7 +131,7 @@ module CommandMapper
         # @param [Hash] node
         #
         def parse_argument_node(node,**kwargs)
-          keywords = kwargs.dup
+          keywords = kwargs
 
           if node[:repeats]
             keywords[:repeats] = true
@@ -154,7 +154,7 @@ module CommandMapper
         def parse_arguments(arguments,**kwargs)
           case arguments
           when Array
-            keywords = kwargs.dup
+            keywords = kwargs
 
             if arguments.delete({repeats: '...'})
               keywords[:repeats] = true
