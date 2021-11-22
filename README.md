@@ -26,6 +26,12 @@ $ command_mapper-gen grep
 Outputs:
 
 ```ruby
+Failed to parse line in `grep --help`:
+
+    -NUM                      same as --context=NUM
+
+Failed to match sequence (('	' / SPACES) OPTION ','? ([ \\t]{1, } OPTION_SUMMARY)? !.) at line 1 char 5.
+
 require 'command_mapper/command'
 
 #
@@ -84,7 +90,7 @@ class Grep < CommandMapper::Command
     option "--binary"
 
     argument :patterns
-    argument :file, required: false
+    argument :file, required: false, repeats: true
   end
 
 end
