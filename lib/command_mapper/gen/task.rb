@@ -7,7 +7,7 @@ module CommandMapper
       # The command name or path to the command.
       #
       # @return [String]
-      attr_reader :command
+      attr_reader :command_name
 
       # The output file path.
       #
@@ -22,7 +22,7 @@ module CommandMapper
       #
       # Initializes the task.
       #
-      # @param [String] command
+      # @param [String] command_name
       #   The command name or path to the command.
       #
       # @param [String] output
@@ -31,10 +31,11 @@ module CommandMapper
       # @param [:help, :man, nil] parser
       #   The optional parser to target.
       #
-      def initialize(command,output, parser: nil)
-        @command = command
-        @output  = output
-        @parser  = parser
+      def initialize(command_name,output, parser: nil)
+        @command_name = command_name
+        @output       = output
+
+        @parser = parser
 
         define
       end
@@ -53,7 +54,7 @@ module CommandMapper
             args << '--parser' << @parser.to_s
           end
 
-          sh "command_mapper-gen", *args, @command
+          sh "command_mapper-gen", *args, @command_name
         end
 
         desc "Generates the #{@output} file"
