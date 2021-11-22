@@ -98,6 +98,15 @@ end
 
 ## Examples
 
+### Rake Task
+
+In `Rakefile`:
+
+```ruby
+require 'command_mapper/gen/task'
+CommandMapper::Gen::Task.new('grep','lib/path/to/grep.rb')
+```
+
 ## Requirements
 
 * [ruby] >= 2.0.0
