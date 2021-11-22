@@ -127,7 +127,11 @@ $ gem install command_mapper-gen
 ### Gemfile
 
 ```ruby
-gem 'command_mapper-gen', '~> 0.1', require: false
+group :development do
+  # ...
+
+  gem 'command_mapper-gen', '~> 0.1', require: false
+end
 ```
 
 ## License
