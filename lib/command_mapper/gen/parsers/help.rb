@@ -179,7 +179,7 @@ module CommandMapper
         end
 
         #
-        # Parses an option line (ex: `    -o, --opt VALUE      Blah blah lbah`)
+        # Parses an option line (ex: `    -o, --opt VALUE      Blah blah blah`)
         # into {#command}.
         #
         # @param [String] line
