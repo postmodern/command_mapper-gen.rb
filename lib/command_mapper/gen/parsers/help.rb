@@ -131,10 +131,18 @@ module CommandMapper
         # @param [Hash] node
         #
         def parse_argument_node(node,**kwargs)
+          keywords = kwargs.dup
+
+          if node[:repeats]
+            keywords[:repeats] = true
+          end
+
           if node[:optional]
-            parse_arguments(node[:optional], required: false, **kwargs)
+            keywords[:required] = false
+
+            parse_arguments(node[:optional], **keywords)
           else
-            parse_argument(node[:argument], **kwargs)
+            parse_argument(node[:argument], **keywords)
           end
         end
 
@@ -146,8 +154,14 @@ module CommandMapper
         def parse_arguments(arguments,**kwargs)
           case arguments
           when Array
+            keywords = kwargs.dup
+
+            if arguments.delete({repeats: '...'})
+              keywords[:repeats] = true
+            end
+
             arguments.each do |node|
-              parse_argument_node(node,**kwargs)
+              parse_argument_node(node,**keywords)
             end
           when Hash
             parse_argument_node(arguments,**kwargs)

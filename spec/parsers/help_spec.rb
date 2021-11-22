@@ -56,6 +56,20 @@ describe CommandMapper::Gen::Parsers::Help do
       end
     end
 
+    context "when an optional argument group repeats" do
+      let(:usage) { "#{command_name} [ARG1 ARG2]..." }
+
+      before { subject.parse_usage(usage) }
+
+      it "must set the Argument#required to false" do
+        expect(command.arguments[:arg1].required).to be(false)
+        expect(command.arguments[:arg1].repeats).to be(true)
+
+        expect(command.arguments[:arg2].required).to be(false)
+        expect(command.arguments[:arg2].repeats).to be(true)
+      end
+    end
+
     context "when the argument is named OPTS" do
       let(:usage) { "#{command_name} [OPTS] ARG..." }
 

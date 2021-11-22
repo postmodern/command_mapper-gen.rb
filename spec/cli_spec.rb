@@ -64,7 +64,7 @@ describe CommandMapper::Gen::CLI do
         "    option \"--help\"",
         "    option \"--version\"",
         "",
-        "    argument :string, required: false",
+        "    argument :string, required: false, repeats: true",
         "  end",
         "",
         "end",
