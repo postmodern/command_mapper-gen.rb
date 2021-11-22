@@ -65,17 +65,24 @@ module CommandMapper
 
         directory(output_dir)
         file(@output => output_dir) do
-          args = ["--output", @output]
-
-          if @parser
-            args << '--parser' << @parser.to_s
-          end
-
-          sh "command_mapper-gen", *args, @command_name
+          generate
         end
 
         desc "Generates the #{@output} file"
         task 'command_mapper:gen' => @output
+      end
+
+      #
+      # Generates the {#output} file.
+      #
+      def generate
+        args = ["--output", @output]
+
+        if @parser
+          args << '--parser' << @parser.to_s
+        end
+
+        sh "command_mapper-gen", *args, @command_name
       end
 
     end
