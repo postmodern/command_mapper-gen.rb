@@ -31,12 +31,20 @@ module CommandMapper
       # @param [:help, :man, nil] parser
       #   The optional parser to target.
       #
+      # @yield [task]
+      #   If a block is given, it will be yielded to before the rake task has
+      #   been defined.
+      #
+      # @yieldparam [Task] task
+      #   The newly created task.
+      #
       def initialize(command_name,output, parser: nil)
         @command_name = command_name
         @output       = output
 
         @parser = parser
 
+        yield self if block_given?
         define
       end
 
