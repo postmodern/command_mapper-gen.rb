@@ -96,6 +96,12 @@ class Grep < CommandMapper::Command
 end
 ```
 
+Output can also be written to a file:
+
+```shell
+$ command_mapper-gen -o lib/path/to/grep.rb grep
+```
+
 ## Examples
 
 ### Rake Task
