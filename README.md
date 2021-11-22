@@ -25,7 +25,7 @@ $ command_mapper-gen grep
 
 Outputs:
 
-```ruby
+```
 Failed to parse line in `grep --help`:
 
     -NUM                      same as --context=NUM
