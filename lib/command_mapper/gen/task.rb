@@ -2,6 +2,15 @@ require 'rake/tasklib'
 
 module CommandMapper
   module Gen
+    #
+    # Defines a `command_mapper:gen` task which automatically generates a
+    # command class file.
+    #
+    #     require 'command_mapper/gen/task'
+    #     CommandMapper::Gen::Task.new('grep','lib/path/to/grep.rb')
+    #
+    #     $ rake command_mapper:gen
+    #
     class Task < Rake::TaskLib
 
       # The command name or path to the command.
