@@ -7,17 +7,17 @@ module CommandMapper
       # The command name or path to the command.
       #
       # @return [String]
-      attr_reader :command_name
+      attr_accessor :command_name
 
       # The output file path.
       #
       # @return [String]
-      attr_reader :output
+      attr_accessor :output
 
       # The parser to invoke.
       #
       # @return [:help, :man, nil]
-      attr_reader :parser
+      attr_accessor :parser
 
       #
       # Initializes the task.
