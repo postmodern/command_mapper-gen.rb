@@ -15,7 +15,7 @@ module CommandMapper
         'man'  => Parsers::Man
       }
 
-      BUG_REPORT_URL = "https://github.com/postmodern/command_mapper-gen/issues/new"
+      BUG_REPORT_URL = "https://github.com/postmodern/command_mapper-gen.rb/issues/new"
 
       # The output file or `nil` for stdout.
       #
