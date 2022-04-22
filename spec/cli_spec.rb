@@ -58,6 +58,8 @@ describe CommandMapper::Gen::CLI do
         "#",
         "# Represents the `#{command_name}` command",
         "#",
+        "# @see #{CommandMapper::Gen::Command::COMMAND_DOC_URL}",
+        "#",
         "class #{command_name.capitalize} < CommandMapper::Command",
         "",
         "  command \"#{command_name}\" do",

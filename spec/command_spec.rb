@@ -146,6 +146,8 @@ describe CommandMapper::Gen::Command do
               "#",
               "# Represents the `#{subject.command_name}` command",
               "#",
+              "# @see #{described_class::COMMAND_DOC_URL}",
+              "#",
               "class #{subject.class_name} < CommandMapper::Command",
               "",
               "  command #{subject.command_name.inspect} do",

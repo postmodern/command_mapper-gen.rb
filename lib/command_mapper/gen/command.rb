@@ -117,6 +117,9 @@ module CommandMapper
         @command_name.split(/[_-]+/).map(&:capitalize).join
       end
 
+      # URL to the documentation for `CommandMapper::Command`.
+      COMMAND_DOC_URL = "https://rubydoc.info/gems/command_mapper/CommandMapper/Command"
+
       #
       # Converts the parsed command to Ruby source code.
       #
@@ -131,6 +134,8 @@ module CommandMapper
           lines << ""
           lines << "#"
           lines << "# Represents the `#{@command_name}` command"
+          lines << "#"
+          lines << "# @see #{COMMAND_DOC_URL}"
           lines << "#"
 
           lines << "class #{class_name} < CommandMapper::Command"
