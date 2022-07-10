@@ -141,7 +141,7 @@ module CommandMapper
             keywords[:required] = false
 
             parse_arguments(node[:optional], **keywords)
-          else
+          elsif node[:argument]
             parse_argument(node[:argument], **keywords)
           end
         end
