@@ -58,13 +58,23 @@ module CommandMapper
 
         rule(:square_brackets) do
           (
-            str('[') >> space? >>
-            value >>
-            space? >> str(']')
+            str('[') >> space? >> value >> space? >> str(']')
           ).as(:optional)
         end
 
+        rule(:single_quotes) do
+          str("'") >> name >> str("'")
+        end
+
+        rule(:double_quotes) do
+          str('"') >> name >> str('"')
+        end
+
         rule(:value_container) do
+          # "'...'"
+          single_quotes |
+          # "\"...\""
+          double_quotes |
           # "{...}"
           curly_braces |
           # "<...>"
@@ -115,7 +125,7 @@ module CommandMapper
         rule(:option_summary) { any.repeat(1) }
 
         rule(:option_line) do
-          (str("\t") | spaces) >> option >> str(',').maybe >>
+          (str("\t") | spaces) >> option >> match[',:'].maybe >>
           (match[' \t'].repeat(1) >> option_summary).maybe >> any.absent?
         end
 
