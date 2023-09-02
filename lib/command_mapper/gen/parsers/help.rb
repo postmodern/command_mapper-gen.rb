@@ -111,6 +111,9 @@ module CommandMapper
         # @param [Hash] argument
         #   An argument node.
         #
+        # @param [Hash{Symbol => Object}] kwargs
+        #   Additional keyword arguments for {Command#argument}.
+        #
         def parse_argument(argument,**kwargs)
           name     = argument[:name].to_s.downcase
           keywords = kwargs
