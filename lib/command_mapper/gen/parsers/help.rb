@@ -108,7 +108,7 @@ module CommandMapper
         #
         # Parses an individual argument node.
         #
-        # @param [Hash] node
+        # @param [Hash] argument
         #   An argument node.
         #
         def parse_argument(argument,**kwargs)
