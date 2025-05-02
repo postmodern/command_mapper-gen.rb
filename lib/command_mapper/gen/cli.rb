@@ -198,7 +198,7 @@ module CommandMapper
       #
       def print_parser_error(command,string,error)
         $stderr.puts "Failed to parse line in `#{command.command_string} --help`:"
-        $stderr.puts ""
+        $stderr.puts
         $stderr.puts "  #{string}"
         $stderr.puts
 
@@ -210,7 +210,7 @@ module CommandMapper
           $stderr.puts error.message
         end
 
-        $stderr.puts ""
+        $stderr.puts
       end
 
       #
