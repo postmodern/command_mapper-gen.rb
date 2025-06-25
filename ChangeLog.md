@@ -1,3 +1,9 @@
+### 0.1.1 / 2025-06-24
+
+* Improvements and bug fixes for `--help` parsing logic:
+  * Ignore explicit option flags when parsing the `usage:` line.
+  * Tweak the option parser for Go-style `--help` output.
+
 ### 0.1.0 / 2021-11-25
 
 * Initial release:
