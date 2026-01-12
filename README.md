@@ -116,7 +116,7 @@ CommandMapper::Gen::Task.new('grep','lib/path/to/grep.rb')
 
 ## Requirements
 
-* [ruby] >= 2.0.0
+* [ruby] >= 3.0.0
 * [parslet] ~> 2.0
 
 ## Install
